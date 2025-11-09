@@ -4,14 +4,19 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import hero from "../../../../public/hero.png";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function Hero() {
   const { data: session } = useSession();
-  const onClickCreate =()=>{
-    if(session){
+  const router = useRouter();
 
+  const onClickCreate = () => {
+    if (session) {
+      router.push("/createcv");
+    } else {
+      router.push("/loginpage");
     }
-  }
+  };
 
   return (
     <section className="flex flex-col-reverse lg:flex-row items-center justify-between px-6 lg:px-20 pb-20 md:pt-0 pt-10">
