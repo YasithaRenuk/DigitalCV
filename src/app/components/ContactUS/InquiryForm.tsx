@@ -29,12 +29,15 @@ export default function InquiryForm({ reasonTopic = "" }: InquiryFormProps) {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const topics = [
-    "Report an issue in CV",
+    "Report an issue on Your CV",
+    "Change username and PIN",
     "Account Support",
+    "Extend membership",
     "Feature Request",
     "Feedback",
   ];
 
+  // Prefill user's first name
   useEffect(() => {
     if (session?.user?.name) {
       const [first] = session.user.name.split(" ");
@@ -42,8 +45,10 @@ export default function InquiryForm({ reasonTopic = "" }: InquiryFormProps) {
     }
   }, [session]);
 
+  // Auto-select topic if valid reasonTopic is provided
   useEffect(() => {
     if (reasonTopic && topics.includes(reasonTopic)) {
+      console.log("reasonTopic",reasonTopic)
       setForm((prev) => ({ ...prev, topic: reasonTopic }));
     }
   }, [reasonTopic]);
@@ -73,7 +78,7 @@ export default function InquiryForm({ reasonTopic = "" }: InquiryFormProps) {
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-5">
-        {/* First & Last Name — stack on mobile, side by side on larger screens */}
+        {/* Name fields */}
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1">
             <Input
@@ -104,7 +109,7 @@ export default function InquiryForm({ reasonTopic = "" }: InquiryFormProps) {
         {/* Topic */}
         <div>
           <Select
-            value={form.topic}
+            value={form.topic || undefined}
             onValueChange={(value) => setForm({ ...form, topic: value })}
           >
             <SelectTrigger
@@ -143,7 +148,7 @@ export default function InquiryForm({ reasonTopic = "" }: InquiryFormProps) {
           )}
         </div>
 
-        {/* Submit Button */}
+        {/* Submit */}
         <Button
           type="submit"
           variant="secondary"

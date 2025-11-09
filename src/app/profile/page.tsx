@@ -29,6 +29,10 @@ const ProfilePage = () => {
   const profilePic = session?.user?.image || null;
   const name = session?.user?.name;
 
+  const onClick = (topic:string) => { 
+    router.push("/contactus?reasonTopic="+topic);
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center py-6 px-4 md:px-10">
       {/* User Info Card */}
@@ -69,13 +73,13 @@ const ProfilePage = () => {
 
       {/* Action Buttons */}
       <div className="flex flex-col md:flex-row gap-4 mt-6 w-full md:w-[70%]">
-        <Button variant="outline" className="flex-1 border border-primary bg-white hover:bg-primary hover:text-white h-56 md:h-72">
+        <Button variant="outline" className="flex-1 border border-primary bg-white hover:bg-primary hover:text-white h-56 md:h-72" onClick={() => onClick("Change username and PIN")}>
           Change username & PIN
         </Button>
-        <Button className="flex-1 border border-primary bg-white hover:bg-primary hover:text-white h-56 md:h-72">
+        <Button className="flex-1 border border-primary bg-white hover:bg-primary hover:text-white h-56 md:h-72" onClick={() => onClick("Report an issue on Your CV")}>
           Report an issue on Your CV
         </Button>
-        <Button className="flex-1 border border-primary bg-white hover:bg-primary hover:text-white h-56 md:h-72">
+        <Button className="flex-1 border border-primary bg-white hover:bg-primary hover:text-white h-56 md:h-72" onClick={() => onClick("Extend membership")}>
           Extend membership
         </Button>
       </div>
