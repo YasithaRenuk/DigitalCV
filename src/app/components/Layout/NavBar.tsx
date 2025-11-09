@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
-import { Menu, X } from "lucide-react"; // for hamburger icons
+import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function Navbar() {
@@ -11,7 +11,7 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <nav className="w-full shadow-md shadow-primary fixed top-0 left-0 z-50 bg-white">
+    <nav className="w-full shadow-md shadow-primary left-0 z-50 bg-white">
       <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
         {/* Logo */}
         <div className="flex items-center space-x-2">

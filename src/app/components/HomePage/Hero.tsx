@@ -3,10 +3,18 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import hero from "../../../../public/hero.png";
+import { useSession } from "next-auth/react";
 
 export default function Hero() {
+  const { data: session } = useSession();
+  const onClickCreate =()=>{
+    if(session){
+
+    }
+  }
+
   return (
-    <section className="flex flex-col-reverse lg:flex-row items-center justify-between px-6 lg:px-20 py-20 bg-white">
+    <section className="flex flex-col-reverse lg:flex-row items-center justify-between px-6 lg:px-20 pb-20 md:pt-0 pt-10">
       {/* Left Section */}
       <div className="flex flex-col items-start text-left space-y-6 lg:w-1/2 ml-0 md:ml-28">
         <p className="text-lg text-primary font-medium">
@@ -23,7 +31,7 @@ export default function Hero() {
         </p>
 
         <div className="flex space-x-5">
-          <Button className="font-bold px-5">CREATE CV</Button>
+          <Button className="font-bold px-5" onClick={onClickCreate}>CREATE CV</Button>
           <Button className="font-bold px-5">SEARCH CV</Button>
         </div>
 
