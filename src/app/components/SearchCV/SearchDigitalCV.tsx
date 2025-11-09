@@ -1,13 +1,24 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Eye, EyeClosed } from "lucide-react";
 
-const SearchDigitalCV: React.FC = () => {
-  const [username, setUsername] = useState("");
-  const [pin, setPin] = useState("");
+interface SearchDigitalCVProps {
+  username?: string;
+  pin?: string;
+}
+
+const SearchDigitalCV: React.FC<SearchDigitalCVProps> = ({ username: initialUsername = "", pin: initialPin = "" }) => {
+  const [username, setUsername] = useState(initialUsername);
+  const [pin, setPin] = useState(initialPin);
   const [showPin, setShowPin] = useState(false);
   const [errors, setErrors] = useState({ username: "", pin: "" });
+
+  // Optional: automatically fill fields if props change dynamically
+  useEffect(() => {
+    if (initialUsername) setUsername(initialUsername);
+    if (initialPin) setPin(initialPin);
+  }, [initialUsername, initialPin]);
 
   const handleSearch = () => {
     let valid = true;
@@ -32,9 +43,7 @@ const SearchDigitalCV: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-white px-6 w-3xl">
-      <h1 className="text-2xl font-semibold mb-6 text-center">
-        Search DigitalCV
-      </h1>
+      <h1 className="text-2xl font-semibold mb-6 text-center">Search DigitalCV</h1>
 
       {/* Username Input */}
       <div className="w-full max-w-sm mb-4">
@@ -49,9 +58,7 @@ const SearchDigitalCV: React.FC = () => {
               : "border-orange-400 focus:ring-orange-200"
           }`}
         />
-        {errors.username && (
-          <p className="text-sm text-red-500 mt-1">{errors.username}</p>
-        )}
+        {errors.username && <p className="text-sm text-red-500 mt-1">{errors.username}</p>}
       </div>
 
       {/* PIN Input */}
@@ -62,9 +69,7 @@ const SearchDigitalCV: React.FC = () => {
           value={pin}
           onChange={(e) => setPin(e.target.value)}
           className={`w-full border rounded-md px-4 py-2 pr-10 outline-none focus:ring-2 ${
-            errors.pin
-              ? "border-red-500 ring-red-200"
-              : "border-orange-400 focus:ring-orange-200"
+            errors.pin ? "border-red-500 ring-red-200" : "border-orange-400 focus:ring-orange-200"
           }`}
         />
         <button

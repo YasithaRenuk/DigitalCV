@@ -2,8 +2,13 @@
 
 import Image from "next/image";
 import SearchDigitalCV from "../components/SearchCV/SearchDigitalCV";
+import { useSearchParams } from "next/navigation";
 
 const SearchCV = () => {
+  const searchParams = useSearchParams();
+  const username = searchParams.get("username") || "";
+  const pin = searchParams.get("pin") || "";
+
   return (
     <div className="flex flex-col md:flex-row min-h-screen pt-10 md:pt-1">
       {/* Left Section (Hidden on Mobile) */}
@@ -20,7 +25,7 @@ const SearchCV = () => {
 
       {/* Right Section */}
       <div className="w-full md:w-[50%] flex items-center justify-center">
-        <SearchDigitalCV />
+        <SearchDigitalCV username={username} pin={pin} />
       </div>
     </div>
   );

@@ -18,6 +18,10 @@ export default function Hero() {
     }
   };
 
+  const onClickSearch = () => { 
+    router.push("/searchcv");
+  };
+
   return (
     <section className="flex flex-col-reverse lg:flex-row items-center justify-between px-6 lg:px-20 pb-20 md:pt-0 pt-10">
       {/* Left Section */}
@@ -37,7 +41,7 @@ export default function Hero() {
 
         <div className="flex space-x-5">
           <Button className="font-bold px-5" onClick={onClickCreate}>CREATE CV</Button>
-          <Button className="font-bold px-5">SEARCH CV</Button>
+          <Button className="font-bold px-5" onClick={onClickSearch}>SEARCH CV</Button>
         </div>
 
         <div className="flex flex-col sm:flex-row sm:space-x-10 space-y-3 sm:space-y-0 mt-6">

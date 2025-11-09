@@ -5,11 +5,17 @@ import { useState } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
   const { data: session, status } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
+  const router = useRouter();
 
+  const handleClickProfile = () => {
+    router.push("/profile"); 
+  }
+  
   return (
     <nav className="w-full shadow-md shadow-primary left-0 z-50 bg-white">
       <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
@@ -25,7 +31,7 @@ export default function Navbar() {
         <div className="hidden md:flex items-center space-x-4">
           {status === "authenticated" && session?.user ? (
             <div className="flex items-center space-x-3">
-              <span className="text-gray-800 dark:text-gray-200">
+              <span className="text-gray-800 dark:text-gray-200" onClick={handleClickProfile}>
                 {session.user.name}
               </span>
               {session.user.image && (
@@ -80,7 +86,7 @@ export default function Navbar() {
                       className="rounded-full border border-gray-300"
                     />
                   )}
-                  <span className="text-gray-800 dark:text-gray-200 font-medium">
+                  <span className="text-gray-800 dark:text-gray-200 font-medium" onClick={handleClickProfile}>
                     {session.user.name}
                   </span>
                 </div>
