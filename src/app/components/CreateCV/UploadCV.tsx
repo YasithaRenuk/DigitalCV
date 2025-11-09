@@ -40,7 +40,7 @@ export default function UploadCV() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white">
+    <div className="max-w-md mx-auto md:mt-10 p-6 bg-white">
       <h2 className="text-2xl font-semibold text-center mb-6">Upload Your CV</h2>
 
       {/* Username */}
@@ -122,7 +122,7 @@ export default function UploadCV() {
       </p>
 
       {/* Create Button */}
-      <Button onClick={handleCreate} className="w-full  text-white">
+      <Button onClick={handleCreate} className="w-full  text-white hover:bg-white hover:text-secondary hover:border-secondary hover:border-2" variant="secondary">
         Create
       </Button>
     </div>
