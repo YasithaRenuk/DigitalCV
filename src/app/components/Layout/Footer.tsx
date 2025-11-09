@@ -15,7 +15,7 @@ export default function Footer() {
             Privacy Policy
           </a>
           <a
-            href="/contact"
+            href="/contactus"
             className="hover:text-primary transition-colors font-medium"
           >
             Contact Us

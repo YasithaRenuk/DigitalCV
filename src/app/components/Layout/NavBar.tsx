@@ -20,12 +20,16 @@ export default function Navbar() {
     <nav className="w-full shadow-md shadow-primary left-0 z-50 bg-white">
       <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
         {/* Logo */}
-        <div className="flex items-center space-x-2">
-          {/* <Image src="/logo.png" alt="DigitalCV Logo" width={40} height={40} /> */}
-          <span className="text-xl font-bold">
-            DigitalCV
-          </span>
-        </div>
+        <a
+          href="/"
+        >
+          <div className="flex items-center space-x-2">
+            {/* <Image src="/logo.png" alt="DigitalCV Logo" width={40} height={40} /> */}
+            <span className="text-xl font-bold">
+              DigitalCV
+            </span>
+          </div>
+        </a>
 
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center space-x-4">
