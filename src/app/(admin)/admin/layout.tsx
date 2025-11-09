@@ -2,6 +2,8 @@ import { ReactNode } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/app/globals.css";
 import SessionProvider from "@/components/providers/SessionProvider";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/ui/app-sidebar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,9 +20,13 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <SessionProvider>
-          <div className="">
-            {children}
-          </div>
+          <SidebarProvider>
+            <AppSidebar />
+            <div className="">
+              <SidebarTrigger />
+              {children}
+            </div>
+          </SidebarProvider>
         </SessionProvider>
       </body>
     </html>
