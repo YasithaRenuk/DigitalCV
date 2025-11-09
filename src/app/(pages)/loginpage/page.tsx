@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import LoginPage from "../components/LoginPage/LoginPage"
+import LoginPage from "../../components/LoginPage/LoginPage"
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";

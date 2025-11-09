@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import SearchDigitalCV from "../components/SearchCV/SearchDigitalCV";
+import SearchDigitalCV from "../../components/SearchCV/SearchDigitalCV";
 import { useSearchParams } from "next/navigation";
 
 const SearchCV = () => {

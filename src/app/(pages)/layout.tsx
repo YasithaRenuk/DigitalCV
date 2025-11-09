@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import "@/app/globals.css";
 import SessionProvider from "@/components/providers/SessionProvider";
-import Navbar from "./components/Layout/NavBar";
-import Footer from "./components/Layout/Footer";
+import Navbar from "../components/Layout/NavBar";
+import Footer from "../components/Layout/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,20 +22,25 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+  params,
+}: {
   children: React.ReactNode;
-}>) {
+  params: any;
+}) {
+   
+  const isAdmin = typeof window !== "undefined" ? window.location.pathname.startsWith("/admin") : false;
+
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <SessionProvider>
-          <Navbar/>
+          {!isAdmin && <Navbar />}
           <div className="">
             {children}
           </div>
-          <Footer/>
+          {!isAdmin && <Footer />}
         </SessionProvider>
       </body>
     </html>

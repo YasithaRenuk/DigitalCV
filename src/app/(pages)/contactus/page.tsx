@@ -1,7 +1,7 @@
 "use client";
 
-import OurProcessCard from "../components/ContactUS/OurProcessCard";
-import InquiryForm from "../components/ContactUS/InquiryForm";
+import OurProcessCard from "../../components/ContactUS/OurProcessCard";
+import InquiryForm from "../../components/ContactUS/InquiryForm";
 import { useSearchParams } from "next/navigation";
 
 const ContactUS = () => {

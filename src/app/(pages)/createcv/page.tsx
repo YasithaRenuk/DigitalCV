@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useEffect } from "react";
-import Instructions from "../components/CreateCV/Instructions";
-import UploadCV from "../components/CreateCV/UploadCV";
+import Instructions from "../../components/CreateCV/Instructions";
+import UploadCV from "../../components/CreateCV/UploadCV";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
