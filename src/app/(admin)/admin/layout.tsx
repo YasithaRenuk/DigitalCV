@@ -22,8 +22,8 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         <SessionProvider>
           <SidebarProvider>
             <AppSidebar />
-            <div className="">
-              <SidebarTrigger />
+            <div className="bg-[#FBF2ED] w-full">
+              <SidebarTrigger/>
               {children}
             </div>
           </SidebarProvider>
