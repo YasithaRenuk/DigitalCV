@@ -87,6 +87,7 @@ export default function InquiryForm({ reasonTopic = "" }: InquiryFormProps) {
           lastName: form.lastName,
           topic: form.topic,
           message: form.message,
+          email: session?.user.email? session?.user.email : null,
         }),
       });
 

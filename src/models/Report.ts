@@ -4,6 +4,7 @@ export interface IReport extends Document {
   fristname: string;
   lastname?: string;
   topic: string;
+  email?:string;
   message: string;
   createdAt: Date;
   updatedAt: Date;
@@ -23,6 +24,9 @@ const ReportSchema: Schema = new Schema(
       type: String,
     },
     message: {
+      type: String,
+    },
+    email: {
       type: String,
     },
   },

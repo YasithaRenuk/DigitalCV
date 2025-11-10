@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
     await connectDB();
 
     const body = await request.json();
-    const { firstName, lastName, topic, message } = body;
+    const { firstName, lastName, topic, message,email } = body;
 
     // Validate required fields
     if (!firstName || !topic || !message) {
@@ -23,6 +23,7 @@ export async function POST(request: NextRequest) {
       lastname: lastName || "",
       topic: topic,
       message: message,
+      email:email
     });
 
     await report.save();
@@ -37,6 +38,7 @@ export async function POST(request: NextRequest) {
           topic: report.topic,
           message: report.message,
           createdAt: report.createdAt,
+          email: report.email,
         },
       },
       { status: 201 }
@@ -66,6 +68,7 @@ export async function GET(request: NextRequest) {
           topic: report.topic,
           message: report.message,
           createdAt: report.createdAt,
+          email:report.email,
         })),
       },
       { status: 200 }

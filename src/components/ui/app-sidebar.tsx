@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { Calendar, Home, Inbox, Search, Settings, LogOut } from "lucide-react";
+import { signOut } from "next-auth/react";
 
 import {
   Sidebar,
@@ -108,7 +109,7 @@ export function AppSidebar() {
             <SidebarMenuItem className="w-full">
               <SidebarMenuButton asChild className="p-4">
                 <a
-                  href="/logout"
+                  onClick={() => signOut()}
                   className="flex items-center w-full text-red-600 rounded-md hover:bg-[#ecd377] border-2 border-secondary text-xl "
                 >
                   <LogOut />
