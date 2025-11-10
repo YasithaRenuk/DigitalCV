@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
   try {
     await connectDB();
 
-    const reports = await Report.find().sort({ createdAt: -1 }).limit(10);
+    const reports = await Report.find().sort({ createdAt: -1 });
 
     return NextResponse.json(
       {
@@ -68,7 +68,7 @@ export async function GET(request: NextRequest) {
           topic: report.topic,
           message: report.message,
           createdAt: report.createdAt,
-          email:report.email,
+          email: report.email,
         })),
       },
       { status: 200 }
@@ -77,6 +77,39 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching reports:", error);
     return NextResponse.json(
       { error: "Failed to fetch reports", details: error.message },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    await connectDB();
+
+    const body = await request.json();
+    const { ids } = body;
+
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return NextResponse.json(
+        { error: "Invalid request. 'ids' array is required." },
+        { status: 400 }
+      );
+    }
+
+    const result = await Report.deleteMany({ _id: { $in: ids } });
+
+    return NextResponse.json(
+      {
+        success: true,
+        message: `Deleted ${result.deletedCount} report(s)`,
+        deletedCount: result.deletedCount,
+      },
+      { status: 200 }
+    );
+  } catch (error: any) {
+    console.error("Error deleting reports:", error);
+    return NextResponse.json(
+      { error: "Failed to delete reports", details: error.message },
       { status: 500 }
     );
   }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   Table,
@@ -16,19 +16,47 @@ import { Input } from "@/components/ui/input";
 import { Search, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const reports = [
-  { id: 1, firstname: "Yasitha", email: "asd@gmail.com", topic: "System Bug Report" },
-  { id: 2, firstname: "Kamal", email: "kamal@example.com", topic: "UI Improvement" },
-  { id: 3, firstname: "Nimal", email: "nimal@example.com", topic: "Login Issue" },
-  { id: 4, firstname: "Saman", email: "saman@example.com", topic: "Feature Request" },
-  { id: 5, firstname: "Amali", email: "amali@example.com", topic: "Performance Feedback" },
-  { id: 6, firstname: "Ruwan", email: "ruwan@example.com", topic: "Other" },
-];
+interface Report {
+  id: string;
+  firstName: string;
+  lastName?: string;
+  email?: string;
+  topic?: string;
+  message?: string;
+  createdAt: string;
+}
 
 export default function Inbox() {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedReports, setSelectedReports] = useState<number[]>([]);
+  const [selectedReports, setSelectedReports] = useState<string[]>([]);
+  const [reports, setReports] = useState<Report[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch reports from API
+  useEffect(() => {
+    const fetchReports = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch("/api/reports");
+        const data = await response.json();
+
+        if (data.success) {
+          setReports(data.reports);
+        } else {
+          setError(data.error || "Failed to fetch reports");
+        }
+      } catch (err) {
+        setError("Failed to fetch reports");
+        console.error("Error fetching reports:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReports();
+  }, []);
 
   const filteredReports = reports.filter((report) =>
     Object.values(report)
@@ -42,7 +70,7 @@ export default function Inbox() {
     filteredReports.every((r) => selectedReports.includes(r.id));
 
   // Handle single checkbox
-  const toggleSelect = (id: number) => {
+  const toggleSelect = (id: string) => {
     setSelectedReports((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
@@ -63,9 +91,35 @@ export default function Inbox() {
   };
 
   // Handle delete action
-  const handleDelete = () => {
-    alert(`Deleting reports with IDs: ${selectedReports.join(", ")}`);
-    // You can replace the above alert with your delete logic
+  const handleDelete = async () => {
+    if (selectedReports.length === 0) return;
+
+    if (!confirm(`Are you sure you want to delete ${selectedReports.length} report(s)?`)) {
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/reports", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ids: selectedReports }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Remove deleted reports from state
+        setReports((prev) => prev.filter((r) => !selectedReports.includes(r.id)));
+        setSelectedReports([]);
+      } else {
+        alert(`Error: ${data.error || "Failed to delete reports"}`);
+      }
+    } catch (err) {
+      console.error("Error deleting reports:", err);
+      alert("Failed to delete reports");
+    }
   };
 
   return (
@@ -104,56 +158,68 @@ export default function Inbox() {
         </CardHeader>
 
         <CardContent className="overflow-x-auto p-0 ml-10">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-gray-100">
-                <TableHead className="text-gray-700 font-semibold w-12">
-                  <Checkbox checked={allSelected} onCheckedChange={toggleSelectAll} />
-                </TableHead>
-                <TableHead className="text-gray-700 font-semibold">ID</TableHead>
-                <TableHead className="text-gray-700 font-semibold">First Name</TableHead>
-                <TableHead className="text-gray-700 font-semibold">Email</TableHead>
-                <TableHead className="text-gray-700 font-semibold">Topic</TableHead>
-              </TableRow>
-            </TableHeader>
-
-            <TableBody>
-              {filteredReports.length > 0 ? (
-                filteredReports.map((report, index) => (
-                  <TableRow
-                    key={report.id}
-                    className={`cursor-pointer hover:bg-gray-50 transition ${
-                      index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                    }`}
-                    onClick={() => router.push(`/admin/inbox/${report.id}`)}
-                  >
-                    <TableCell
-                      className="font-medium text-gray-900"
-                      onClick={(e) => e.stopPropagation()} // prevent row click
-                    >
-                      <Checkbox
-                        checked={selectedReports.includes(report.id)}
-                        onCheckedChange={() => toggleSelect(report.id)}
-                      />
-                    </TableCell>
-                    <TableCell className="font-medium text-gray-900">{report.id}</TableCell>
-                    <TableCell className="text-gray-800">{report.firstname}</TableCell>
-                    <TableCell className="text-gray-600">{report.email}</TableCell>
-                    <TableCell className="text-gray-700">{report.topic}</TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={5}
-                    className="text-center py-6 text-gray-500 italic"
-                  >
-                    No matching reports found.
-                  </TableCell>
+          {loading ? (
+            <div className="text-center py-12 text-gray-500">
+              Loading reports...
+            </div>
+          ) : error ? (
+            <div className="text-center py-12 text-red-500">
+              {error}
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-gray-100">
+                  <TableHead className="text-gray-700 font-semibold w-12">
+                    <Checkbox checked={allSelected} onCheckedChange={toggleSelectAll} />
+                  </TableHead>
+                  <TableHead className="text-gray-700 font-semibold">ID</TableHead>
+                  <TableHead className="text-gray-700 font-semibold">First Name</TableHead>
+                  <TableHead className="text-gray-700 font-semibold">Email</TableHead>
+                  <TableHead className="text-gray-700 font-semibold">Topic</TableHead>
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
+              </TableHeader>
+
+              <TableBody>
+                {filteredReports.length > 0 ? (
+                  filteredReports.map((report, index) => (
+                    <TableRow
+                      key={report.id}
+                      className={`cursor-pointer hover:bg-gray-50 transition ${
+                        index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                      }`}
+                      onClick={() => router.push(`/admin/inbox/${report.id}`)}
+                    >
+                      <TableCell
+                        className="font-medium text-gray-900"
+                        onClick={(e) => e.stopPropagation()} // prevent row click
+                      >
+                        <Checkbox
+                          checked={selectedReports.includes(report.id)}
+                          onCheckedChange={() => toggleSelect(report.id)}
+                        />
+                      </TableCell>
+                      <TableCell className="font-medium text-gray-900">
+                        {report.id.substring(0, 8)}...
+                      </TableCell>
+                      <TableCell className="text-gray-800">{report.firstName}</TableCell>
+                      <TableCell className="text-gray-600">{report.email || "N/A"}</TableCell>
+                      <TableCell className="text-gray-700">{report.topic || "N/A"}</TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={5}
+                      className="text-center py-6 text-gray-500 italic"
+                    >
+                      No matching reports found.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
     </div>
