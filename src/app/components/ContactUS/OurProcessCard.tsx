@@ -17,7 +17,7 @@ export default function OurProcessCard() {
   ];
 
   return (
-    <div className="max-w-3xl mx-auto bg-white shadow-md shadow-primary border-primary border-2 rounded-xl p-6 md:p-8 text-center mb-10">
+    <div className="max-w-2xl mx-auto shadow-md shadow-primary border-primary border-2 rounded-xl p-6 md:p-8 text-center mb-10">
       {/* Header */}
       <h2 className="text-2xl md:text-3xl font-semibold mb-2">Our Process</h2>
       <p className="text-gray-600 mb-8 text-base md:text-lg px-2">
@@ -26,7 +26,7 @@ export default function OurProcessCard() {
       </p>
 
       {/* Steps */}
-      <div className="flex flex-col space-y-6 mt-6 md:mt-10">
+      <div className="flex flex-col space-y-6 mt-6 md:mt-5">
         {steps.map((step, index) => (
           <div
             key={index}
