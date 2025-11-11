@@ -40,7 +40,7 @@ export default function UploadCV() {
   };
 
   return (
-    <div className="max-w-md mx-auto md:mt-10 p-6 bg-white">
+    <div className="max-w-md mx-auto p-6 bg-white md:-mt-20">
       <h2 className="text-2xl font-semibold text-center mb-6">Upload Your CV</h2>
 
       {/* Username */}
