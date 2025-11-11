@@ -3,15 +3,13 @@ import connectDB from "@/lib/mongodb";
 import Report from "@/models/Report";
 import mongoose from "mongoose";
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> | { id: string } }
-) {
+export async function POST( request: NextRequest) {
   try {
     await connectDB();
 
-    const { id } = await Promise.resolve(params);
-
+    const body = await request.json();
+    const { id } = body;
+ 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json(
         { error: "Invalid report ID" },

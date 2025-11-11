@@ -34,7 +34,14 @@ function Page() {
           return;
         }
         
-        const response = await fetch(`/api/reports/${reportId}`);
+        const response = await fetch(`/api/report`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id: reportId}),
+        });
+        
         const data = await response.json();
 
         if (data.success) {
