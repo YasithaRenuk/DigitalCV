@@ -1,10 +1,12 @@
 "use client";
+export const dynamic = "force-dynamic";
 
+import { Suspense } from "react";
 import Image from "next/image";
 import SearchDigitalCV from "../../components/SearchCV/SearchDigitalCV";
 import { useSearchParams } from "next/navigation";
 
-const SearchCV = () => {
+function SearchCVContent() {
   const searchParams = useSearchParams();
   const username = searchParams.get("username") || "";
   const pin = searchParams.get("pin") || "";
@@ -29,6 +31,12 @@ const SearchCV = () => {
       </div>
     </div>
   );
-};
+}
 
-export default SearchCV;
+export default function SearchCV() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SearchCVContent />
+    </Suspense>
+  );
+}
