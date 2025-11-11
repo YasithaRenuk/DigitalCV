@@ -51,15 +51,13 @@ export async function POST( request: NextRequest) {
   }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> | { id: string } }
-) {
+export async function DELETE(request: NextRequest) {
   try {
     await connectDB();
-
-    const { id } = await Promise.resolve(params);
-
+    
+    const body = await request.json();
+    const { id } = body;
+ 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json(
         { error: "Invalid report ID" },
