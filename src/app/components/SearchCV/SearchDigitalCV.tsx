@@ -42,7 +42,7 @@ const SearchDigitalCV: React.FC<SearchDigitalCVProps> = ({ username: initialUser
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-white px-6 w-3xl">
+    <div className="flex flex-col items-center justify-center min-h-screen px-6 w-3xl md:-mt-24">
       <h1 className="text-2xl font-semibold mb-6 text-center">Search DigitalCV</h1>
 
       {/* Username Input */}
