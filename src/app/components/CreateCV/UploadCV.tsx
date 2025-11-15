@@ -3,7 +3,7 @@
 import { useState, ChangeEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Eye, EyeClosed } from "lucide-react";
+import { Eye, EyeClosed, AlertCircle, X, CheckCircle2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -17,11 +17,14 @@ export default function UploadCV() {
   const router = useRouter();
 
   const [errors, setErrors] = useState<{ username?: string; pin?: string; cv?: string }>({});
+  const [backendError, setBackendError] = useState<string>("");
+  const [successMessage, setSuccessMessage] = useState<string>("");
 
   const handleUpload = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setCvFiles((prev) => [...prev, ...Array.from(e.target.files || [])]);
       setErrors((prev) => ({ ...prev, cv: undefined }));
+      setBackendError("");
     }
   };
 
@@ -30,6 +33,10 @@ export default function UploadCV() {
   };
 
   const handleCreate = async () => {
+    // Clear previous messages
+    setBackendError("");
+    setSuccessMessage("");
+    
     const newErrors: typeof errors = {};
     if (!username.trim()) newErrors.username = "Username is required";
     if (!pin.trim()) newErrors.pin = "PIN is required";
@@ -40,8 +47,8 @@ export default function UploadCV() {
     if (Object.keys(newErrors).length > 0) return;
 
     if (!session || !session.user) {
-      alert("Please log in to create a CV");
-      router.push("/loginpage");
+      setBackendError("Please log in to create a CV");
+      setTimeout(() => router.push("/loginpage"), 2000);
       return;
     }
 
@@ -66,18 +73,44 @@ export default function UploadCV() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Failed to create UserCV");
+        // Handle specific error cases
+        const errorMessage = data.error || "Failed to create UserCV";
+        
+        // Check if it's a username duplicate error
+        if (errorMessage.toLowerCase().includes("username already exists") || 
+            errorMessage.toLowerCase().includes("duplicate")) {
+          setErrors((prev) => ({ 
+            ...prev, 
+            username: errorMessage 
+          }));
+        } else if (errorMessage.toLowerCase().includes("unauthorized")) {
+          setBackendError("You are not authorized to perform this action. Please log in again.");
+          setTimeout(() => router.push("/loginpage"), 2000);
+        } else {
+          setBackendError(errorMessage);
+        }
+        
+        throw new Error(errorMessage);
       }
 
-      // Success - reset form and show success message
-      alert("CV created successfully!");
+      
       setUsername("");
       setPin("");
       setCvFiles([]);
       setErrors({});
-    } catch (error: any) {
+      
+      
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 2000);
+
+    } catch (error: unknown) {
       console.error("Error creating UserCV:", error);
-      alert(error.message || "Failed to create CV. Please try again.");
+      // Error already handled above, just ensure backend error is set
+      if (!backendError && !errors.username) {
+        const errorMessage = error instanceof Error ? error.message : "Failed to create CV. Please try again.";
+        setBackendError(errorMessage);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -93,10 +126,19 @@ export default function UploadCV() {
           type="text"
           placeholder="Enter username"
           value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          className={`border-orange-300 ${errors.username ? "border-red-500" : ""}`}
+          onChange={(e) => {
+            setUsername(e.target.value);
+            setErrors((prev) => ({ ...prev, username: undefined }));
+            setBackendError("");
+          }}
+          className={`border-orange-300 ${errors.username ? "border-red-500 bg-red-50" : ""}`}
         />
-        {errors.username && <p className="text-red-500 text-sm mt-1">{errors.username}</p>}
+        {errors.username && (
+          <div className="flex items-center gap-1 mt-1.5">
+            <AlertCircle className="w-4 h-4 text-red-500" />
+            <p className="text-red-500 text-sm">{errors.username}</p>
+          </div>
+        )}
       </div>
 
       {/* PIN */}
@@ -106,12 +148,16 @@ export default function UploadCV() {
             type={showPword ? "text" : "password"}
             placeholder="Enter PIN"
             value={pin}
-            onChange={(e) => setPin(e.target.value)}
-            className={`pr-10 border-orange-300 ${errors.pin ? "border-red-500" : ""}`}
+            onChange={(e) => {
+              setPin(e.target.value);
+              setErrors((prev) => ({ ...prev, pin: undefined }));
+              setBackendError("");
+            }}
+            className={`pr-10 border-orange-300 ${errors.pin ? "border-red-500 bg-red-50" : ""}`}
           />
 
           <span
-            className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500"
+            className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500 hover:text-gray-700 transition-colors"
             onClick={() => setShowPword(!showPword)}
           >
             {showPword ? <Eye /> : <EyeClosed />}
@@ -119,7 +165,10 @@ export default function UploadCV() {
         </div>
 
         {errors.pin && (
-          <p className="text-red-500 text-sm mt-1">{errors.pin}</p>
+          <div className="flex items-center gap-1 mt-1.5">
+            <AlertCircle className="w-4 h-4 text-red-500" />
+            <p className="text-red-500 text-sm">{errors.pin}</p>
+          </div>
         )}
       </div>
 
@@ -144,7 +193,12 @@ export default function UploadCV() {
         <p className="text-xs text-gray-400 mt-2">
           Supported: PDF, DOC, DOCX, or Image
         </p>
-        {errors.cv && <p className="text-red-500 text-sm mt-1">{errors.cv}</p>}
+        {errors.cv && (
+          <div className="flex items-center gap-1 mt-2 justify-center">
+            <AlertCircle className="w-4 h-4 text-red-500" />
+            <p className="text-red-500 text-sm">{errors.cv}</p>
+          </div>
+        )}
       </label>
 
       {/* Selected Files */}

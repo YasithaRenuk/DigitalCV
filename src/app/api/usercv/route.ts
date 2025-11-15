@@ -67,6 +67,15 @@ export async function POST(request: NextRequest) {
     );
   } catch (error: any) {
     console.error('Error creating UserCV:', error);
+    
+    // Handle duplicate username error
+    if (error.code === 11000 && error.keyPattern?.username) {
+      return NextResponse.json(
+        { error: 'Username already exists. Please choose a different username.' },
+        { status: 409 }
+      );
+    }
+    
     return NextResponse.json(
       { error: error.message || 'Failed to create UserCV' },
       { status: 500 }
@@ -227,6 +236,15 @@ export async function PUT(request: NextRequest) {
     );
   } catch (error: any) {
     console.error('Error updating UserCV:', error);
+    
+    // Handle duplicate username error
+    if (error.code === 11000 && error.keyPattern?.username) {
+      return NextResponse.json(
+        { error: 'Username already exists. Please choose a different username.' },
+        { status: 409 }
+      );
+    }
+    
     return NextResponse.json(
       { error: error.message || 'Failed to update UserCV' },
       { status: 500 }
