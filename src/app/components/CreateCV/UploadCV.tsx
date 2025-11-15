@@ -92,18 +92,14 @@ export default function UploadCV() {
         
         throw new Error(errorMessage);
       }
-
       
       setUsername("");
       setPin("");
       setCvFiles([]);
       setErrors({});
       
+      router.push(`/showcv?id=${data.userCV.id}`);
       
-      setTimeout(() => {
-        router.push("/dashboard");
-      }, 2000);
-
     } catch (error: unknown) {
       console.error("Error creating UserCV:", error);
       // Error already handled above, just ensure backend error is set
