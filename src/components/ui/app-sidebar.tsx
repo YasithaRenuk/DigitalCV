@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { usePathname } from "next/navigation";
-import { Calendar, Home, Inbox, Search, Settings, LogOut } from "lucide-react";
+import { Calendar, Home, Inbox, Search, Settings, LogOut, FileText } from "lucide-react";
 import { signOut } from "next-auth/react";
 
 import {
@@ -29,20 +29,10 @@ const items = [
     icon: Inbox,
   },
   {
-    title: "Calendar",
-    url: "/admin/calendar",
-    icon: Calendar,
-  },
-  {
-    title: "Search",
-    url: "/admin/search",
-    icon: Search,
-  },
-  {
-    title: "Settings",
-    url: "/admin/settings",
-    icon: Settings,
-  },
+    title: "UserCV",
+    url: "/admin/usercv",
+    icon: FileText,
+  }
 ];
 
 export function AppSidebar() {
