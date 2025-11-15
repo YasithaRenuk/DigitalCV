@@ -84,7 +84,7 @@ export default function UploadCV() {
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white md:-mt-20">
+    <div className="max-w-md mx-auto p-6 bg-white">
       <h2 className="text-2xl font-semibold text-center mb-6">Upload Your CV</h2>
 
       {/* Username */}
@@ -100,22 +100,29 @@ export default function UploadCV() {
       </div>
 
       {/* PIN */}
-      <div className="relative mb-4">
-        <Input
-          type={showPword ? "text" : "password"}
-          placeholder="Enter PIN"
-          value={pin}
-          onChange={(e) => setPin(e.target.value)}
-          className={`pr-10 border-orange-300 ${errors.pin ? "border-red-500" : ""}`}
-        />
-        <span
-          className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500"
-          onClick={() => setShowPword(!showPword)}
-        >
-          {showPword ? <Eye /> : <EyeClosed />}
-        </span>
-        {errors.pin && <p className="text-red-500 text-sm mt-1">{errors.pin}</p>}
+      <div className="mb-4">
+        <div className="relative">
+          <Input
+            type={showPword ? "text" : "password"}
+            placeholder="Enter PIN"
+            value={pin}
+            onChange={(e) => setPin(e.target.value)}
+            className={`pr-10 border-orange-300 ${errors.pin ? "border-red-500" : ""}`}
+          />
+
+          <span
+            className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500"
+            onClick={() => setShowPword(!showPword)}
+          >
+            {showPword ? <Eye /> : <EyeClosed />}
+          </span>
+        </div>
+
+        {errors.pin && (
+          <p className="text-red-500 text-sm mt-1">{errors.pin}</p>
+        )}
       </div>
+
 
       {/* File Upload */}
       <label
