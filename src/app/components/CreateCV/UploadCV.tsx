@@ -4,12 +4,17 @@ import { useState, ChangeEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Eye, EyeClosed } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function UploadCV() {
   const [username, setUsername] = useState<string>("");
   const [pin, setPin] = useState<string>("");
   const [cvFiles, setCvFiles] = useState<File[]>([]);
   const [showPword, setShowPword] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { data: session } = useSession();
+  const router = useRouter();
 
   const [errors, setErrors] = useState<{ username?: string; pin?: string; cv?: string }>({});
 
@@ -24,7 +29,7 @@ export default function UploadCV() {
     setCvFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     const newErrors: typeof errors = {};
     if (!username.trim()) newErrors.username = "Username is required";
     if (!pin.trim()) newErrors.pin = "PIN is required";
@@ -34,9 +39,48 @@ export default function UploadCV() {
 
     if (Object.keys(newErrors).length > 0) return;
 
-    console.log("Username:", username);
-    console.log("PIN:", pin);
-    console.log("Uploaded CVs:", cvFiles);
+    if (!session || !session.user) {
+      alert("Please log in to create a CV");
+      router.push("/loginpage");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // Create FormData to send username, password, and files
+      const formData = new FormData();
+      formData.append("username", username);
+      formData.append("password", pin);
+      
+      // Append all CV files (accepted but not processed as per requirements)
+      cvFiles.forEach((file) => {
+        formData.append("cvFiles", file);
+      });
+
+      const response = await fetch("/api/usercv", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to create UserCV");
+      }
+
+      // Success - reset form and show success message
+      alert("CV created successfully!");
+      setUsername("");
+      setPin("");
+      setCvFiles([]);
+      setErrors({});
+    } catch (error: any) {
+      console.error("Error creating UserCV:", error);
+      alert(error.message || "Failed to create CV. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -122,8 +166,13 @@ export default function UploadCV() {
       </p>
 
       {/* Create Button */}
-      <Button onClick={handleCreate} className="w-full  text-white hover:bg-white hover:text-secondary hover:border-secondary hover:border-2" variant="secondary">
-        Create
+      <Button 
+        onClick={handleCreate} 
+        className="w-full  text-white hover:bg-white hover:text-secondary hover:border-secondary hover:border-2" 
+        variant="secondary"
+        disabled={isLoading}
+      >
+        {isLoading ? "Creating..." : "Create"}
       </Button>
     </div>
   );
