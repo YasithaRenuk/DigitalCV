@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { usePathname } from "next/navigation";
-import { Calendar, Home, Inbox, Search, Settings, LogOut, FileText } from "lucide-react";
+import { Home, Inbox, Users, FileText, LogOut } from "lucide-react";
 import { signOut } from "next-auth/react";
 
 import {
@@ -16,7 +15,6 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-// Menu items
 const items = [
   {
     title: "Home",
@@ -24,65 +22,68 @@ const items = [
     icon: Home,
   },
   {
-    title: "Inbox",
+    title: "CV Builder",
+    url: "/admin/cv-builder",
+    icon: FileText,
+  },
+  {
+    title: "inbox",
     url: "/admin/inbox",
     icon: Inbox,
   },
   {
-    title: "UserCV",
+    title: "users",
+    url: "/admin/usercv",
+    icon: Users,
+  },
+  {
+    title: "CV's",
     url: "/admin/usercv",
     icon: FileText,
-  }
+  },
 ];
 
 export function AppSidebar() {
   const pathname = usePathname();
-  const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <Sidebar
-      className={`${
-        collapsed ? "w-20" : "w-64"
-      } transition-all duration-300 border-r border-gray-200`}
-    >
+    <Sidebar className="h-screen">
       <SidebarContent className="flex flex-col justify-between h-full">
         <div>
           <SidebarGroup>
-            <SidebarGroupContent className="flex flex-col items-center md:items-start">
-              <SidebarMenu className="w-full gap-5 p-5 items-center justify-center">
-                <SidebarMenuItem className="items-center justify-center">
-                  <SidebarMenuButton
-                    asChild
-                    className="w-24 h-24 text-4xl rounded-full bg-orange-200 flex items-center justify-center text-white font-bold overflow-hidden my-4"
-                  >
-                    {/* User Avatar */}
-                    <div
-                      className={`w-24 h-24 text-4xl rounded-full bg-orange-200 flex items-center justify-center text-white font-bold overflow-hidden my-4`}
-                    >
-                      <a href="/">😺</a>
-                    </div>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              </SidebarMenu>
+            <SidebarGroupContent className="flex flex-col items-center pt-8">
+              {/* Avatar */}
+              <div className="w-24 h-24 rounded-full bg-[#EFD470] mb-10" />
 
-              {/* Menu Items */}
-              <SidebarMenu className="w-full gap-5 p-5">
+              {/* Nav items */}
+              <SidebarMenu className="flex flex-col gap-6">
                 {items.map((item) => {
                   const isActive = pathname === item.url;
+
                   return (
                     <SidebarMenuItem
                       key={item.title}
-                      className={`w-full rounded-md p-4 hover:bg-[#ecd377] ${
-                        isActive ? "bg-[#ecd377] " : "border-2 border-secondary"
-                      }`}
+                      className={`
+                        w-[207px]
+                        h-[44px]
+                        rounded-[8px]
+                        ml-5
+                        flex items-center
+                        transition-colors
+                        ${
+                          isActive
+                            ? "bg-[#FBEFBF] border border-transparent"
+                            : "bg-white border border-[#F1752F] hover:bg-[#FFF5D1]"
+                        }
+                      `}
                     >
-                      <SidebarMenuButton asChild className="text-xl">
-                        <a
-                          href={item.url}
-                          className={`flex items-center gap-2 px-3 py-2 w-full`}
-                        >
-                          <item.icon color="#F1752F" size={12} />
-                          {!collapsed && <span>{item.title}</span>}
+                      <SidebarMenuButton asChild className="w-full h-full px-[23px] py-[10px]">
+                        <a href={item.url} className="flex items-center gap-[9px]">
+                          {/* Icon box */}
+                          <span className="w-6 h-6 rounded-[4px] bg-[#F1752F] flex items-center justify-center">
+                            <item.icon size={16} className="text-white" />
+                          </span>
+                          <span className="text-sm text-black">{item.title}</span>
                         </a>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -93,18 +94,32 @@ export function AppSidebar() {
           </SidebarGroup>
         </div>
 
-        {/* Footer */}
-        <SidebarFooter className="mb-4">
+        {/* Logout */}
+        <SidebarFooter className="mb-6 flex justify-center">
           <SidebarMenu>
-            <SidebarMenuItem className="w-full">
-              <SidebarMenuButton asChild className="p-4">
-                <a
+            <SidebarMenuItem className="w-[207px]">
+              <SidebarMenuButton asChild className="w-full">
+                <button
+                  type="button"
                   onClick={() => signOut()}
-                  className="flex items-center w-full text-red-600 rounded-md hover:bg-[#ecd377] border-2 border-secondary text-xl "
+                  className="
+                    w-full
+                    h-[44px]
+                    rounded-[8px]
+                    border border-[#F1752F]
+                    bg-white
+                    flex items-center
+                    px-[23px] py-[10px]
+                    gap-[9px]
+                    text-sm text-black
+                    hover:bg-[#FFF5D1]
+                  "
                 >
-                  <LogOut />
-                  {!collapsed && <span>Logout</span>}
-                </a>
+                  <span className="w-6 h-6 rounded-[999px] border border-[#F1752F] flex items-center justify-center">
+                    <LogOut size={16} className="text-[#F1752F]" />
+                  </span>
+                  <span>Logout</span>
+                </button>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>

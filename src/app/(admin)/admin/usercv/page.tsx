@@ -414,7 +414,6 @@ export default function UserCVPage() {
               <Label htmlFor="password">PIN (Password)</Label>
               <Input
                 id="password"
-                type="password"
                 value={editFormData.password}
                 onChange={(e) =>
                   setEditFormData({ ...editFormData, password: e.target.value })

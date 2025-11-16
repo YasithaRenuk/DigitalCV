@@ -25,14 +25,14 @@ export default function FeatureSection() {
   ];
 
   return (
-    <section className="bg-yellow-200 py-20 px-6">
+    <section className="bg-[#ECD377] py-20 px-6">
       <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {features.map((feature, index) => (
           <div
             key={index}
-            className="bg-yellow-300 shadow-lg rounded-lg p-8 text-center flex flex-col items-center hover:shadow-xl transition-shadow"
+            className="bg-[#F1E82926] shadow-lg rounded-lg p-8 text-center flex flex-col items-center hover:shadow-xl transition-shadow"
           >
-            <div className="bg-yellow-400 w-20 h-20 flex items-center justify-center rounded-full mb-6">
+            <div className="bg-[#F1E829] w-20 h-20 flex items-center justify-center rounded-full mb-6">
               {feature.icon}
             </div>
             <h3 className="text-lg font-bold text-black mb-4">
