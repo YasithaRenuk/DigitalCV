@@ -33,7 +33,7 @@ const items = [
   },
   {
     title: "users",
-    url: "/admin/usercv",
+    url: "/admin/users",
     icon: Users,
   },
   {

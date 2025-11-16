@@ -15,6 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Search, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Pagination } from "@/components/ui/pagination";
 
 interface Report {
   id: string;
@@ -33,6 +34,8 @@ export default function Inbox() {
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   // Fetch reports from API
   useEffect(() => {
@@ -65,9 +68,20 @@ export default function Inbox() {
       .includes(searchTerm.toLowerCase())
   );
 
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredReports.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedReports = filteredReports.slice(startIndex, endIndex);
+
+  // Reset to page 1 when search term changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
   const allSelected =
-    filteredReports.length > 0 &&
-    filteredReports.every((r) => selectedReports.includes(r.id));
+    paginatedReports.length > 0 &&
+    paginatedReports.every((r) => selectedReports.includes(r.id));
 
   // Handle single checkbox
   const toggleSelect = (id: string) => {
@@ -80,11 +94,11 @@ export default function Inbox() {
   const toggleSelectAll = () => {
     if (allSelected) {
       setSelectedReports((prev) =>
-        prev.filter((id) => !filteredReports.map((r) => r.id).includes(id))
+        prev.filter((id) => !paginatedReports.map((r) => r.id).includes(id))
       );
     } else {
       const newSelected = [
-        ...new Set([...selectedReports, ...filteredReports.map((r) => r.id)]),
+        ...new Set([...selectedReports, ...paginatedReports.map((r) => r.id)]),
       ];
       setSelectedReports(newSelected);
     }
@@ -181,8 +195,8 @@ export default function Inbox() {
               </TableHeader>
 
               <TableBody>
-                {filteredReports.length > 0 ? (
-                  filteredReports.map((report, index) => (
+                {paginatedReports.length > 0 ? (
+                  paginatedReports.map((report, index) => (
                     <TableRow
                       key={report.id}
                       className={`cursor-pointer hover:bg-gray-50 transition ${
@@ -221,6 +235,16 @@ export default function Inbox() {
             </Table>
           )}
         </CardContent>
+        
+        {!loading && !error && filteredReports.length > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            itemsPerPage={itemsPerPage}
+            totalItems={filteredReports.length}
+          />
+        )}
       </Card>
     </div>
   );

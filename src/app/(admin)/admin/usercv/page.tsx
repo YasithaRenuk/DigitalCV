@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Pagination } from "@/components/ui/pagination";
 
 interface UserCV {
   id: string;
@@ -55,6 +56,8 @@ export default function UserCVPage() {
     start_date: "",
     end_date: "",
   });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   // Fetch UserCVs from API
   useEffect(() => {
@@ -87,9 +90,20 @@ export default function UserCVPage() {
       .includes(searchTerm.toLowerCase())
   );
 
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredUserCVs.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedUserCVs = filteredUserCVs.slice(startIndex, endIndex);
+
+  // Reset to page 1 when search term changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
   const allSelected =
-    filteredUserCVs.length > 0 &&
-    filteredUserCVs.every((ucv) => selectedUserCVs.includes(ucv.id));
+    paginatedUserCVs.length > 0 &&
+    paginatedUserCVs.every((ucv) => selectedUserCVs.includes(ucv.id));
 
   // Handle single checkbox
   const toggleSelect = (id: string) => {
@@ -102,11 +116,11 @@ export default function UserCVPage() {
   const toggleSelectAll = () => {
     if (allSelected) {
       setSelectedUserCVs((prev) =>
-        prev.filter((id) => !filteredUserCVs.map((ucv) => ucv.id).includes(id))
+        prev.filter((id) => !paginatedUserCVs.map((ucv) => ucv.id).includes(id))
       );
     } else {
       const newSelected = [
-        ...new Set([...selectedUserCVs, ...filteredUserCVs.map((ucv) => ucv.id)]),
+        ...new Set([...selectedUserCVs, ...paginatedUserCVs.map((ucv) => ucv.id)]),
       ];
       setSelectedUserCVs(newSelected);
     }
@@ -288,8 +302,8 @@ export default function UserCVPage() {
               </TableHeader>
 
               <TableBody>
-                {filteredUserCVs.length > 0 ? (
-                  filteredUserCVs.map((userCV, index) => (
+                {paginatedUserCVs.length > 0 ? (
+                  paginatedUserCVs.map((userCV, index) => (
                     <TableRow
                       key={userCV.id}
                       className={`hover:bg-gray-50 transition ${
@@ -362,6 +376,16 @@ export default function UserCVPage() {
             </Table>
           )}
         </CardContent>
+        
+        {!loading && !error && filteredUserCVs.length > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            itemsPerPage={itemsPerPage}
+            totalItems={filteredUserCVs.length}
+          />
+        )}
       </Card>
 
       {/* Delete Confirmation Dialog */}
@@ -460,6 +484,7 @@ export default function UserCVPage() {
     </div>
   );
 }
+
 
 
 
