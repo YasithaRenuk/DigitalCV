@@ -105,6 +105,7 @@ export function AppSidebar() {
                   className="
                     w-full
                     h-[44px]
+                    ml-5
                     rounded-[8px]
                     border border-[#F1752F]
                     bg-white
