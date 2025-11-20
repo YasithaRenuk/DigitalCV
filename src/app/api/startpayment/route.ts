@@ -41,8 +41,8 @@ export async function POST( request: NextRequest) {
     const Paymnetbody = {
       amount:transaction.amount,
       currency:transaction.currency,
-      redirectUrl:"https://partible-unwashable-glayds.ngrok-free.dev/paymentStates",
-      webhook:"https://partible-unwashable-glayds.ngrok-free.dev/api/savepayment",
+      redirectUrl:process.env.NEXTAUTH_URL as string + "/paymentStates",
+      webhook:process.env.NEXTAUTH_URL as string + "/api/savepayment",
       localId:transaction.id,
       customerReference:transaction.userID,
       tokenizationDetails:{
