@@ -29,7 +29,7 @@ function SearchCVContent() {
         return;
       }
 
-      const res = await fetch("http://localhost:3000/api/startpayment", {
+      const res = await fetch("/api/startpayment", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
