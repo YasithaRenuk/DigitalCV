@@ -4,7 +4,7 @@ import illustration from "../../../../public/1683258268891-removebg-preview 1.pn
 
 export default function Instructions() {
   return (
-    <div className="bg-white shadow-md shadow-primary rounded-lg p-4 md:p-6 w-[95%] md:w-[80%] mx-auto border-2 border-primary">
+    <div className="bg-white shadow-md shadow-primary rounded-lg p-4 md:p-6 w-[90%] md:w-[50%] mx-auto border-2 border-primary">
       {/* Title */}
       <h2 className="text-xl font-semibold text-gray-900 mb-4">Instructions :</h2>
 
