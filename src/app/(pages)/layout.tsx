@@ -1,18 +1,13 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Montserrat } from "next/font/google";
 import "@/app/globals.css";
 import SessionProvider from "@/components/providers/SessionProvider";
 import Navbar from "../components/Layout/NavBar";
 import Footer from "../components/Layout/Footer";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const montserrat = Montserrat({
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: "--font-montserrat",
 });
 
 export const metadata: Metadata = {
@@ -22,24 +17,21 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-  params,
 }: {
   children: React.ReactNode;
-  params: any;
 }) {
-   
-  const isAdmin = typeof window !== "undefined" ? window.location.pathname.startsWith("/admin") : false;
+
+  const isAdmin =
+    typeof window !== "undefined"
+      ? window.location.pathname.startsWith("/admin")
+      : false;
 
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${montserrat.variable} antialiased`}>
         <SessionProvider>
           {!isAdmin && <Navbar />}
-          <div className="">
-            {children}
-          </div>
+          <div>{children}</div>
           {!isAdmin && <Footer />}
         </SessionProvider>
       </body>

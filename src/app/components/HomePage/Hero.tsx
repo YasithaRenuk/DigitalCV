@@ -18,7 +18,7 @@ export default function Hero() {
     }
   };
 
-  const onClickSearch = () => { 
+  const onClickSearch = () => {
     router.push("/searchcv");
   };
 
@@ -30,30 +30,36 @@ export default function Hero() {
           5861 <span className="text-gray-600">resumes created today</span>
         </p>
 
-        <h2 className="text-xl font-medium text-gray-700">Welcome To</h2>
-        <h1 className="text-5xl lg:text-8xl font-extrabold text-black">
+        <h2 className="text-4xl font-medium text-gray-700">Welcome To</h2>
+        <h1 className="text-8xl lg:text-8xl font-extrabold text-black">
           DIGITAL<span className="text-black">CV</span>
         </h1>
 
-        <p className="text-gray-700 text-xl font-medium">
+        <p className="text-gray-700 text-3xl font-medium">
           Your Gateway To Professional Success
         </p>
 
         <div className="flex space-x-5">
-          <Button className="font-bold px-5" onClick={onClickCreate}>CREATE CV</Button>
-          <Button className="font-bold px-5" onClick={onClickSearch}>SEARCH CV</Button>
+          <Button className="font-bold px-5" onClick={onClickCreate}>
+            CREATE CV
+          </Button>
+          <Button className="font-bold px-5" onClick={onClickSearch}>
+            SEARCH CV
+          </Button>
         </div>
 
         <div className="flex flex-col sm:flex-row sm:space-x-10 space-y-3 sm:space-y-0 mt-6">
-          <div className="flex items-center space-x-2">
+          <div className="flex flex-col items-start space-y-1">
             <span className="bg-[#F1E829] text-secondary font-bold px-3 py-1 rounded text-lg">
               48%
             </span>
-            <span className="text-gray-700 text-lg">more likely to get hired</span>
+            <span className="text-gray-700 text-lg">
+              more likely to get hired
+            </span>
           </div>
 
-          <div className="flex items-center space-x-2">
-            <span className="bg-[#ECD377] font-bold px-3 py-1 rounded text-lg">
+          <div className="flex flex-col items-start space-y-1">
+            <span className="bg-[#ECD37766] font-bold px-3 py-1 rounded text-lg">
               12%
             </span>
             <span className="text-gray-700 text-lg">
