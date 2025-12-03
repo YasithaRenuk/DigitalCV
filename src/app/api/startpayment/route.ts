@@ -42,13 +42,9 @@ export async function POST( request: NextRequest) {
       amount:transaction.amount,
       currency:transaction.currency,
       redirectUrl:process.env.NEXTAUTH_URL as string + "/paymentStates",
-      // webhook:process.env.NEXTAUTH_URL as string + "/api/savepayment",
+      webhook:process.env.NEXTAUTH_URL as string + "/api/savepayment",
       localId:transaction.id,
       customerReference:transaction.userID,
-      tokenizationDetails:{
-        tokenize:false,
-        paymentType:"UNSCHEDULED"
-      }
     }
 
     const updateTransaction = await Payment.findByIdAndUpdate(
