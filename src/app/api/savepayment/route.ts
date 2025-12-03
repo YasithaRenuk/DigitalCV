@@ -12,6 +12,7 @@ export async function POST( request: NextRequest) {
     const { localId,state } = body;
 
     const normalizedState = (state || "").toLowerCase();
+    console.log("normalizedState:", normalizedState);
 
     const payment = await Payment.findByIdAndUpdate(
       localId,
@@ -23,11 +24,14 @@ export async function POST( request: NextRequest) {
     );
 
     if (!payment) {
+      console.log("Payment not found for localId:", localId);
       return NextResponse.json(
         { success: false, message: "Payment not found" },
         { status: 404 }
       );
     }
+
+    console.log("Updated payment:", payment);
 
     let cvStatus: "active" | "deactive" | null = null;
     
@@ -37,11 +41,25 @@ export async function POST( request: NextRequest) {
       cvStatus = "deactive";
     }
 
-    if (cvStatus && payment.CVID) {
-      await UserCV.findByIdAndUpdate(payment.CVID, { status: cvStatus });
-    }
+    if (!cvStatus) {
+      console.log("No cvStatus derived from state, skipping UserCV update");
+    } else if (!payment.CVID) {           
+      console.log("Payment has no CVID field, cannot update UserCV");
+    } else {
+      console.log("Updating UserCV:", payment.CVID, "to status:", cvStatus);
 
-    // console.log("body",body)
+      const updatedCv = await UserCV.findOneAndUpdate(
+        { _id: payment.CVID },          // or { id: payment.CVID } if your schema uses `id`
+        { $set: { status: cvStatus } },
+        { new: true }
+      );
+
+      console.log("Updated UserCV:", updatedCv);
+
+      if (!updatedCv) {
+        console.log("No UserCV found with id:", payment.CVID);
+      }
+    }
     
     return NextResponse.json(
       {
