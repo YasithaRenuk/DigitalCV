@@ -39,7 +39,7 @@ const PaymentSchema :Schema = new Schema(
         status: {
             type: String,
             required:true,
-            enum: ["PENDING", "SUCCESS", "FAILED"],
+            enum: ["PENDING", "CONFIRMED", "FAILED"],
             default: "PENDING",
         },
         rawRequest: { type: Object },  // data you sent to Genie

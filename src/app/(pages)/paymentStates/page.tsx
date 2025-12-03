@@ -19,6 +19,7 @@ const getStatusUI = (state: string | null) => {
   switch (normalized) {
     case "success":
     case "completed":
+    case "confirmed": // 👈 added this so CONFIRMED is treated as success
       return {
         title: "Payment Successful",
         message: "Your transaction has been completed",

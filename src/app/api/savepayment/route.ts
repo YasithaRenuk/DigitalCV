@@ -11,14 +11,37 @@ export async function POST( request: NextRequest) {
     const body = await request.json();
     const { localId,state } = body;
 
-    const updateTransaction = await Payment.findByIdAndUpdate(
-        localId,
-        {
-            rawResponse:body,
-            status:state
-        }
-    )
-    console.log("body",body)
+    const normalizedState = (state || "").toLowerCase();
+
+    const payment = await Payment.findByIdAndUpdate(
+      localId,
+      {
+        rawResponse: body,
+        status: state,
+      },
+      { new: true } 
+    );
+
+    if (!payment) {
+      return NextResponse.json(
+        { success: false, message: "Payment not found" },
+        { status: 404 }
+      );
+    }
+
+    let cvStatus: "active" | "deactive" | 'pending' = 'pending';
+    
+    if (normalizedState === "confirmed") {
+      cvStatus = "active";
+    } else if (normalizedState === "failed" || normalizedState === "faild") {
+      cvStatus = "deactive";
+    }
+
+    if (cvStatus && payment.CVID) {
+      await UserCV.findByIdAndUpdate(payment.CVID, { status: cvStatus });
+    }
+    
+    // console.log("body",body)
     
     return NextResponse.json(
       {
