@@ -50,7 +50,7 @@ export async function POST( request: NextRequest) {
 
       const updatedCv = await UserCV.findOneAndUpdate(
         { _id: payment.CVID },          // or { id: payment.CVID } if your schema uses `id`
-        { $set: { status: cvStatus } },
+        { $set: { states: cvStatus } },
         { new: true }
       );
 
