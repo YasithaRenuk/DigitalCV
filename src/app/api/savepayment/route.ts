@@ -29,7 +29,7 @@ export async function POST( request: NextRequest) {
       );
     }
 
-    let cvStatus: "active" | "deactive" | 'pending' = 'pending';
+    let cvStatus: "active" | "deactive" | null = null;
     
     if (normalizedState === "confirmed") {
       cvStatus = "active";
@@ -40,7 +40,7 @@ export async function POST( request: NextRequest) {
     if (cvStatus && payment.CVID) {
       await UserCV.findByIdAndUpdate(payment.CVID, { status: cvStatus });
     }
-    
+
     // console.log("body",body)
     
     return NextResponse.json(
