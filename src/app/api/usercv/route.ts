@@ -32,6 +32,103 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+    
+    const existingUserCV  = await UserCV.findOne({"username":username})
+    
+    if (existingUserCV) {
+      return NextResponse.json(
+        { error: 'Username already exists. Please choose a different username.' },
+        { status: 409 }
+      );
+    }
+
+    const apiFormData = new FormData();
+
+    cvFiles.forEach((file) => {
+      apiFormData.append('file', file);
+    });
+
+    const ocrResponse = await fetch(process.env.AI_URL + '/cv/ocr-and-structure',
+      {
+        method: 'POST',
+        body: apiFormData,
+      }
+    );
+    
+    let ocrJson: any = null;
+    ocrJson = await ocrResponse.json();
+    
+    if (!ocrResponse.ok) {
+      // validation error (422)
+      if (ocrResponse.status === 422 && ocrJson?.detail) {
+        return NextResponse.json(
+          {
+            error: 'CV validation failed on OCR service',
+            details: ocrJson.detail,
+          },
+          { status: 422 }
+        );
+      }
+
+      // Other errors from OCR service
+      return NextResponse.json(
+        {
+          error: 'Failed to process CV with OCR service',
+          details: ocrJson || null,
+        },
+        { status: 502 }
+      );
+    }
+    
+    // console.log("ocrJson",ocrJson)
+
+    const payloadForEnhance = {
+      ...ocrJson,
+      certifications: ocrJson.certifications ?? [],
+      projects: ocrJson.projects ?? [],
+      extracurricular_activities: ocrJson.extracurricular_activities ?? [],
+      achievements: ocrJson.achievements ?? [],
+      references: ocrJson.references ?? [],
+    };
+
+    const enhanceCVResponse = await fetch(process.env.AI_URL + '/cv/enhance',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payloadForEnhance),
+      }
+    );
+
+    // console.log("enhanceCVResponse",enhanceCVResponse)
+
+    let enhanceCVJson: any = null;
+    enhanceCVJson = await enhanceCVResponse.json();
+
+    if (!enhanceCVResponse.ok) {
+      // validation error (422)
+      if (enhanceCVResponse.status === 422 && enhanceCVJson?.detail) {
+        return NextResponse.json(
+          {
+            error: 'CV validation failed on OCR service',
+            details: enhanceCVJson.detail,
+          },
+          { status: 422 }
+        );
+      }
+
+      // Other errors from OCR service
+      return NextResponse.json(
+        {
+          error: 'Failed to process CV with OCR service',
+          details: enhanceCVJson || null,
+        },
+        { status: 502 }
+      );
+    }
+
+    // console.log("enhanceCVJson",enhanceCVJson)
 
     // Calculate dates
     const start_date = new Date();
@@ -42,15 +139,12 @@ export async function POST(request: NextRequest) {
     const userCV = await UserCV.create({
       username,
       password,
-      cv: null, // Leave as null for now
+      cv:JSON.stringify(enhanceCVJson) , 
       states: 'pending',
       start_date,
       end_date,
       userId: (session.user as any).id,
     });
-
-    // Files are accepted but not processed (as per requirements)
-    // You can access them via cvFiles if needed in the future
 
     return NextResponse.json(
       { 
@@ -65,16 +159,9 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 }
     );
+
   } catch (error: any) {
     console.error('Error creating UserCV:', error);
-    
-    // Handle duplicate username error
-    if (error.code === 11000 && error.keyPattern?.username) {
-      return NextResponse.json(
-        { error: 'Username already exists. Please choose a different username.' },
-        { status: 409 }
-      );
-    }
     
     return NextResponse.json(
       { error: error.message || 'Failed to create UserCV' },
