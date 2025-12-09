@@ -17,7 +17,7 @@ const CreateCV = () => {
   }, [status, router]);
 
   return (
-    <div className="flex flex-col md:flex-row min-h-auto pt-10 md:pt-0 pb-48">
+    <div className="flex flex-col md:flex-row min-h-[calc(100vh-150px)] pt-10 md:pt-0 pb-48">
       {/* Left Section - Hidden on mobile */}
       <div className="hidden md:flex md:w-[50%] h-full items-center justify-center mt-10">
         <Instructions />

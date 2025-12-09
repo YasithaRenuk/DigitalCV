@@ -17,7 +17,7 @@ const Page = () => {
   }, [status, router]);
 
   return (
-    <div className="flex flex-col md:flex-row h-screen pt-10 md:pt-1">
+    <div className="flex flex-col md:flex-row min-h-[calc(100vh-150px)] pt-10 md:pt-1">
       {/* Left Section (30%) */}
       <div className="md:w-[30%] w-full h-full relative">
         <Image

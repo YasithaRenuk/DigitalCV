@@ -34,7 +34,7 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center py-6 px-4 md:px-10">
+    <div className="min-h-[calc(100vh-150px)] flex flex-col items-center py-6 px-4 md:px-10">
       {/* User Info Card */}
       <div className="p-6 flex flex-col md:flex-row w-full md:w-[70%] justify-between items-start bg-white shadow rounded-lg">
         {/* Left Side: Avatar + User Details */}
