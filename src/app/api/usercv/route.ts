@@ -278,7 +278,7 @@ export async function PUT(request: NextRequest) {
 
     await connectDB();
 
-    const { id, username, password, start_date, end_date } = await request.json();
+    const { id, username, password, start_date, end_date, cv } = await request.json();
 
     if (!id) {
       return NextResponse.json(
@@ -292,6 +292,7 @@ export async function PUT(request: NextRequest) {
     if (password) updateData.password = password;
     if (start_date) updateData.start_date = new Date(start_date);
     if (end_date) updateData.end_date = new Date(end_date);
+    if (cv) updateData.cv = cv;
 
     const updatedUserCV = await UserCV.findByIdAndUpdate(
       id,

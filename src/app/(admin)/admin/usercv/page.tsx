@@ -12,7 +12,7 @@ import {
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { Search, Trash2, Edit } from "lucide-react";
+import { Search, Trash2, Edit, Eye, Save, X, Plus, FileText, Code, ArrowUp, ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -25,6 +25,60 @@ import {
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Pagination } from "@/components/ui/pagination";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+
+// Default schemas for adding new items
+const CV_SCHEMAS: any = {
+  experiences: {
+    job_title: "",
+    company: "",
+    location: "",
+    start_date: "",
+    end_date: "",
+    is_current: false,
+    responsibilities: [],
+    achievements: []
+  },
+  education: {
+    degree: "",
+    field_of_study: "",
+    institution: "",
+    location: "",
+    start_date: "",
+    end_date: "",
+    grade: ""
+  },
+  certifications: {
+    name: "",
+    organization: "",
+    issue_date: "",
+    expiration_date: "",
+    credential_id: "",
+    credential_url: ""
+  },
+  projects: {
+    title: "",
+    description: "",
+    technologies: [],
+    link: ""
+  },
+  extracurricular_activities: {
+    title: "",
+    organization: "",
+    description: "",
+    start_date: "",
+    end_date: ""
+  },
+  references: {
+    name: "",
+    company: "",
+    email: "",
+    phone: ""
+  },
+  skills: [], // Array of strings
+  achievements: [] // Array of strings
+};
 
 interface UserCV {
   id: string;
@@ -58,6 +112,14 @@ export default function UserCVPage() {
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  // New state for viewing/editing CV
+  const [viewCVDialogOpen, setViewCVDialogOpen] = useState(false);
+  const [cvContent, setCvContent] = useState("");
+  const [cvData, setCvData] = useState<any>({});
+  const [isRawView, setIsRawView] = useState(false);
+  const [isSavingCV, setIsSavingCV] = useState(false);
+  const [viewingUserCVId, setViewingUserCVId] = useState<string | null>(null);
 
   // Fetch UserCVs from API
   useEffect(() => {
@@ -255,8 +317,323 @@ export default function UserCVPage() {
     }
   };
 
+  // Handle View/Edit CV
+  const handleViewClick = async (id: string) => {
+    setViewingUserCVId(id);
+    setCvContent("Loading...");
+    setViewCVDialogOpen(true);
+
+    try {
+      const response = await fetch("/api/usercv/get-cv", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Try to format JSON if it's a JSON string
+        try {
+          const parsed = JSON.parse(data.cv);
+          setCvContent(JSON.stringify(parsed, null, 2));
+          setCvData(parsed);
+        } catch (e) {
+          // If not valid JSON or already an object (though expected string), just show as is
+          const raw = typeof data.cv === 'object' ? JSON.stringify(data.cv, null, 2) : data.cv || "{}";
+          setCvContent(raw);
+          try {
+             setCvData(JSON.parse(raw));
+          } catch(e) {
+             setCvData({});
+          }
+        }
+      } else {
+        alert(`Error: ${data.error || "Failed to fetch CV"}`);
+        setViewCVDialogOpen(false);
+      }
+    } catch (err) {
+      console.error("Error fetching CV:", err);
+      alert("Failed to fetch CV");
+      setViewCVDialogOpen(false);
+    }
+  };
+
+  const handleSaveCV = async () => {
+    if (!viewingUserCVId) return;
+
+    // Validation
+    if (!cvData.contact_info?.full_name?.trim()) {
+        alert("Full Name is required in Contact Info.");
+        return;
+    }
+    if (!cvData.contact_info?.email?.trim()) {
+        alert("Email is required in Contact Info.");
+        return;
+    }
+
+    try {
+      // Validate JSON
+      try {
+        JSON.parse(cvContent);
+      } catch (e) {
+        alert("Invalid JSON format. Please correct it before saving.");
+        return;
+      }
+
+      setIsSavingCV(true);
+      const response = await fetch("/api/usercv", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: viewingUserCVId,
+          cv: cvContent,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setViewCVDialogOpen(false);
+        setViewingUserCVId(null);
+        // Optional: Show success toast/alert
+      } else {
+        alert(`Error: ${data.error || "Failed to save CV"}`);
+      }
+    } catch (err) {
+      console.error("Error saving CV:", err);
+      alert("Failed to save CV");
+    } finally {
+      setIsSavingCV(false);
+    }
+  };
+
+  const updateCVField = (section: string, value: any) => {
+    const newData = { ...cvData, [section]: value };
+    setCvData(newData);
+    setCvContent(JSON.stringify(newData, null, 2));
+  };
+
+  const addItemToSection = (section: string) => {
+    const currentList = Array.isArray(cvData[section]) ? cvData[section] : [];
+    // If schema is an array (like skills: []), it means it's a list of strings
+    // If schema is an object, it's a list of objects
+    let newItem;
+    if (Array.isArray(CV_SCHEMAS[section])) {
+        newItem = "";
+    } else {
+        newItem = CV_SCHEMAS[section] ? { ...CV_SCHEMAS[section] } : {};
+    }
+    updateCVField(section, [...currentList, newItem]);
+  };
+
+  const removeItemFromSection = (section: string, index: number) => {
+    const currentList = Array.isArray(cvData[section]) ? cvData[section] : [];
+    const newList = [...currentList];
+    newList.splice(index, 1);
+    updateCVField(section, newList);
+  };
+
+  const moveItem = (section: string, index: number, direction: 'up' | 'down') => {
+    const currentList = Array.isArray(cvData[section]) ? cvData[section] : [];
+    if (direction === 'up' && index === 0) return;
+    if (direction === 'down' && index === currentList.length - 1) return;
+
+    const newList = [...currentList];
+    const temp = newList[index];
+    if (direction === 'up') {
+        newList[index] = newList[index - 1];
+        newList[index - 1] = temp;
+    } else {
+        newList[index] = newList[index + 1];
+        newList[index + 1] = temp;
+    }
+    updateCVField(section, newList);
+  };
+
+  const updateItemField = (section: string, index: number, field: string, value: string) => {
+    const currentList = Array.isArray(cvData[section]) ? cvData[section] : [];
+    const newList = [...currentList];
+    if (newList[index]) {
+      newList[index] = { ...newList[index], [field]: value };
+    }
+    updateCVField(section, newList);
+  };
+
+  const updateArrayItem = (section: string, index: number, value: any) => {
+    const currentList = Array.isArray(cvData[section]) ? cvData[section] : [];
+    const newList = [...currentList];
+    newList[index] = value;
+    updateCVField(section, newList);
+  };
+
+  const renderArraySection = (sectionName: string, title: string) => {
+    const items = Array.isArray(cvData[sectionName]) ? cvData[sectionName] : [];
+
+    return (
+      <div className="mb-6">
+        <div className="flex items-center justify-between mb-2">
+          <Label className="text-lg font-semibold capitalize">{title}</Label>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => addItemToSection(sectionName)}
+          >
+            <Plus size={14} className="mr-1" /> Add
+          </Button>
+        </div>
+        <div className="space-y-3">
+          {items.map((item: any, idx: number) => (
+            <Card key={idx} className="p-4 relative">
+              <div className="absolute top-2 right-2 flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-gray-500 hover:text-gray-700"
+                    disabled={idx === 0}
+                    onClick={() => moveItem(sectionName, idx, 'up')}
+                  >
+                    <ArrowUp size={14} />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-gray-500 hover:text-gray-700"
+                    disabled={idx === items.length - 1}
+                    onClick={() => moveItem(sectionName, idx, 'down')}
+                  >
+                    <ArrowDown size={14} />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
+                    onClick={() => removeItemFromSection(sectionName, idx)}
+                  >
+                    <Trash2 size={16} />
+                  </Button>
+              </div>
+              
+              {/* Primitive List Item (String/Number) */}
+              {typeof item === 'string' || typeof item === 'number' ? (
+                 <div className="pr-8">
+                    <Input
+                      value={item}
+                      placeholder={`Enter ${title} item`}
+                      onChange={(e) => updateArrayItem(sectionName, idx, e.target.value)}
+                    />
+                 </div>
+              ) : (
+                /* Object List Item */
+                <div className="grid grid-cols-1 gap-3 pr-8">
+                  {Object.keys(item).map((key) => {
+                    const val = item[key];
+
+                    // 1. Boolean (Checkbox)
+                    if (typeof val === 'boolean') {
+                       return (
+                         <div key={key} className="flex items-center space-x-2 mt-2">
+                            <Checkbox 
+                              checked={val} 
+                              onCheckedChange={(checked) => updateItemField(sectionName, idx, key, !!checked as any)}
+                            />
+                            <Label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 capitalize cursor-pointer">
+                              {key.replace(/_/g, " ")}
+                            </Label>
+                         </div>
+                       );
+                    }
+
+                    // 2. Array of Strings (Nested List like Technologies/Responsibilities)
+                    if (Array.isArray(val)) {
+                      return (
+                         <div key={key} className="space-y-2 mt-2">
+                            <div className="flex items-center justify-between">
+                                <Label className="text-xs text-gray-500 uppercase">{key.replace(/_/g, " ")}</Label>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-6 text-xs"
+                                  onClick={() => {
+                                      const newArray = [...val, ""];
+                                      updateItemField(sectionName, idx, key, newArray as any);
+                                  }}
+                                >
+                                  <Plus size={12} className="mr-1" /> Add
+                                </Button>
+                            </div>
+                            
+                            {val.length === 0 && (
+                                <p className="text-xs text-gray-400 italic">No items added.</p>
+                            )}
+
+                            {val.map((subItem: string, subIdx: number) => (
+                                <div key={subIdx} className="flex items-center gap-2">
+                                    <Input 
+                                      value={subItem} 
+                                      onChange={(e) => {
+                                          const newArray = [...val];
+                                          newArray[subIdx] = e.target.value;
+                                          updateItemField(sectionName, idx, key, newArray as any);
+                                      }}
+                                      className="h-8"
+                                    />
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-8 w-8 text-red-500 hover:text-red-700"
+                                      onClick={() => {
+                                          const newArray = [...val];
+                                          newArray.splice(subIdx, 1);
+                                          updateItemField(sectionName, idx, key, newArray as any);
+                                      }}
+                                    >
+                                      <Trash2 size={14} />
+                                    </Button>
+                                </div>
+                            ))}
+                         </div>
+                      );
+                    }
+
+                    // 3. String/Number (Input)
+                    if (typeof val === 'string' || typeof val === 'number') {
+                        return (
+                          <div key={key} className="space-y-1">
+                            <Label className="text-xs text-gray-500 uppercase">{key.replace(/_/g, " ")}</Label>
+                            <Input
+                              value={val}
+                              onChange={(e) => updateItemField(sectionName, idx, key, e.target.value)}
+                              className="h-8"
+                            />
+                          </div>
+                        );
+                    }
+                    
+                    return null; // Ignore complex nested objects for now
+                  })}
+                </div>
+              )}
+            </Card>
+          ))}
+          {items.length === 0 && (
+             <div className="text-center py-4 border-2 border-dashed rounded-md text-gray-400 text-sm">
+               No items in {title}
+             </div>
+          )}
+        </div>
+        <Separator className="my-4" />
+      </div>
+    );
+  };
+
   return (
     <div className="flex justify-center p-8 min-h-[90%]">
+      {/* ... (Previous Card/Table Code) ... */}
       <Card className="w-full max-w-7xl shadow-lg border border-gray-200 rounded-2xl">
         <CardHeader className="text-left border-b pb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <CardTitle className="text-2xl font-semibold text-gray-800 ml-10">
@@ -279,6 +656,7 @@ export default function UserCVPage() {
         </CardHeader>
 
         <CardContent className="overflow-x-auto p-0 ml-10">
+          {/* ... (Table Rendering Logic - same as before) ... */}
           {loading ? (
             <div className="text-center py-12 text-gray-500">
               Loading UserCVs...
@@ -289,6 +667,7 @@ export default function UserCVPage() {
             <Table>
               <TableHeader>
                 <TableRow className="bg-gray-100">
+                   {/* ... Headers ... */}
                   <TableHead className="text-gray-700 font-semibold w-12">
                     <Checkbox checked={allSelected} onCheckedChange={toggleSelectAll} />
                   </TableHead>
@@ -310,32 +689,36 @@ export default function UserCVPage() {
                         index % 2 === 0 ? "bg-white" : "bg-gray-50"
                       }`}
                     >
-                      <TableCell
-                        className="font-medium text-gray-900"
-                        onClick={(e) => e.stopPropagation()}
-                      >
+                       {/* ... Cells ... */}
+                      <TableCell onClick={(e) => e.stopPropagation()}>
                         <Checkbox
                           checked={selectedUserCVs.includes(userCV.id)}
                           onCheckedChange={() => toggleSelect(userCV.id)}
                         />
                       </TableCell>
-                      <TableCell className="text-gray-800">
-                        {userCV.user?.name || "N/A"}
-                      </TableCell>
-                      <TableCell className="text-gray-800">{userCV.username}</TableCell>
-                      <TableCell className="text-gray-600">
-                        {userCV.user?.email ? maskEmail(userCV.user.email) : "N/A"}
-                      </TableCell>
+                      <TableCell>{userCV.user?.name || "N/A"}</TableCell>
+                      <TableCell>{userCV.username}</TableCell>
+                      <TableCell>{userCV.user?.email ? maskEmail(userCV.user.email) : "N/A"}</TableCell>
                       <TableCell>
-                        <Badge className={getStateColor(userCV.states)}>
-                          {userCV.states}
-                        </Badge>
+                        <Badge className={getStateColor(userCV.states)}>{userCV.states}</Badge>
                       </TableCell>
-                      <TableCell className="text-gray-700">
-                        {formatDate(userCV.createdAt)}
-                      </TableCell>
+                      <TableCell>{formatDate(userCV.createdAt)}</TableCell>
                       <TableCell>
                         <div className="flex gap-2">
+                           {/* Eye Button */}
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleViewClick(userCV.id);
+                            }}
+                            className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                            title="View/Edit CV"
+                          >
+                            <Eye size={14} />
+                          </Button>
+                           {/* Edit Metadata Button */}
                           <Button
                             variant="outline"
                             size="icon"
@@ -347,6 +730,7 @@ export default function UserCVPage() {
                           >
                             <Edit size={14} />
                           </Button>
+                           {/* Delete Button */}
                           <Button
                             variant="destructive"
                             size="icon"
@@ -364,20 +748,15 @@ export default function UserCVPage() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell
-                      colSpan={7}
-                      className="text-center py-6 text-gray-500 italic"
-                    >
-                      No matching UserCVs found.
-                    </TableCell>
+                     <TableCell colSpan={7} className="text-center py-6 text-gray-500">No matching UserCVs found.</TableCell>
                   </TableRow>
                 )}
               </TableBody>
             </Table>
           )}
         </CardContent>
-        
-        {!loading && !error && filteredUserCVs.length > 0 && (
+        {/* ... Pagination ... */}
+         {!loading && !error && filteredUserCVs.length > 0 && (
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
@@ -389,7 +768,7 @@ export default function UserCVPage() {
       </Card>
 
       {/* Delete Confirmation Dialog */}
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Confirm Delete</DialogTitle>
@@ -414,16 +793,15 @@ export default function UserCVPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Edit Dialog */}
+      {/* Edit Metadata Dialog */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle>Edit UserCV</DialogTitle>
-            <DialogDescription>
-              Update the UserCV information below.
-            </DialogDescription>
+             {/* ... Edit Form ... */}
+             <DialogDescription>Update UserCV info.</DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
+            <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label htmlFor="username">Username</Label>
               <Input
@@ -478,6 +856,115 @@ export default function UserCVPage() {
               Cancel
             </Button>
             <Button onClick={handleEditSubmit}>OK</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* View/Edit CV Dialog (Main Form) */}
+      <Dialog open={viewCVDialogOpen} onOpenChange={setViewCVDialogOpen}>
+        <DialogContent className="sm:max-w-[800px] h-[85vh] flex flex-col p-0">
+          <DialogHeader className="px-6 py-4 border-b">
+            <div className="flex items-center justify-between">
+              <DialogTitle>Edit CV Content</DialogTitle>
+              <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-lg">
+                <Button
+                  variant={!isRawView ? "secondary" : "ghost"}
+                  size="sm"
+                  onClick={() => setIsRawView(false)}
+                  className={!isRawView ? "shadow-sm bg-white text-primary" : ""}
+                >
+                  <FileText size={14} className="mr-2" /> Form
+                </Button>
+                <Button
+                   variant={isRawView ? "secondary" : "ghost"}
+                   size="sm"
+                   onClick={() => setIsRawView(true)}
+                   className={isRawView ? "shadow-sm bg-white text-primary" : ""}
+                >
+                  <Code size={14} className="mr-2" /> JSON
+                </Button>
+              </div>
+            </div>
+            <DialogDescription className="hidden">Content Editor</DialogDescription>
+          </DialogHeader>
+
+          <div className="flex-1 min-h-0 relative">
+             {isRawView ? (
+                 <textarea
+                   className="w-full h-full p-4 font-mono text-sm resize-none focus:outline-none bg-slate-50"
+                   value={cvContent}
+                   onChange={(e) => {
+                     setCvContent(e.target.value);
+                     try { setCvData(JSON.parse(e.target.value)); } catch(e) {}
+                   }}
+                   spellCheck={false}
+                 />
+             ) : (
+                <ScrollArea className="h-full">
+                  <div className="p-6 space-y-6">
+                    {/* PERSONAL INFO (contact_info + summary) */}
+                    <div className="mb-6">
+                       <Label className="text-lg font-semibold mb-4 block">Personal Details</Label>
+                       
+                       {/* SUMMARY */}
+                       <div className="mb-4 space-y-1">
+                          <Label className="text-xs uppercase text-gray-500">Professional Summary</Label>
+                          <textarea
+                             className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                             value={cvData.summary || ""}
+                             onChange={(e) => updateCVField("summary", e.target.value)}
+                             placeholder="Write a professional summary..."
+                          />
+                       </div>
+
+                       {/* CONTACT INFO */}
+                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                         {["full_name", "email", "phone", "address", "linkedin", "portfolio", "github"].map(field => (
+                           <div key={field} className="space-y-1">
+                             <Label className="text-xs uppercase text-gray-500">{field.replace(/_/g, " ")}</Label>
+                             <Input
+                               value={cvData.contact_info?.[field] || ""}
+                               onChange={(e) => {
+                                  const newVal = e.target.value;
+                                  updateCVField("contact_info", { ...cvData.contact_info, [field]: newVal });
+                               }}
+                               placeholder={field}
+                             />
+                           </div>
+                         ))}
+                       </div>
+                    </div>
+                    
+                    <Separator />
+
+                    {/* SECTIONS */}
+                    {renderArraySection("experiences", "Work Experiences")}
+                    {renderArraySection("education", "Education")}
+                    {renderArraySection("projects", "Projects")}
+                    {renderArraySection("certifications", "Certifications")}
+                    {renderArraySection("extracurricular_activities", "Extracurricular Activities")}
+                    {renderArraySection("references", "References")}
+                    
+                    {/* Simple Lists */}
+                    {renderArraySection("skills", "Skills")}
+                    {renderArraySection("achievements", "Achievements")}
+
+                  </div>
+                </ScrollArea>
+             )}
+          </div>
+
+          <DialogFooter className="px-6 py-4 border-t">
+            <Button
+              variant="outline"
+              onClick={() => setViewCVDialogOpen(false)}
+              disabled={isSavingCV}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleSaveCV} disabled={isSavingCV}>
+              {isSavingCV ? "Saving..." : "Save Changes"}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
