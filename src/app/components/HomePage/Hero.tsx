@@ -31,11 +31,11 @@ export default function Hero() {
         </p>
 
         <h2 className="text-4xl font-medium text-gray-700">Welcome To</h2>
-        <h1 className="text-8xl lg:text-8xl font-extrabold text-black">
+        <h1 className="text-5xl lg:text-8xl font-extrabold text-black">
           DIGITAL<span className="text-black">CV</span>
         </h1>
 
-        <p className="text-gray-700 text-3xl font-medium">
+        <p className="text-gray-700 text-xl lg:text-3xl font-medium">
           Your Gateway To Professional Success
         </p>
 
