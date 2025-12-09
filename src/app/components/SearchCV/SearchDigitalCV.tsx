@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Eye, EyeClosed } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface SearchDigitalCVProps {
   username?: string;
@@ -9,10 +10,13 @@ interface SearchDigitalCVProps {
 }
 
 const SearchDigitalCV: React.FC<SearchDigitalCVProps> = ({ username: initialUsername = "", pin: initialPin = "" }) => {
+  const router = useRouter();
   const [username, setUsername] = useState(initialUsername);
   const [pin, setPin] = useState(initialPin);
   const [showPin, setShowPin] = useState(false);
   const [errors, setErrors] = useState({ username: "", pin: "" });
+  const [apiError, setApiError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   // Optional: automatically fill fields if props change dynamically
   useEffect(() => {
@@ -20,9 +24,11 @@ const SearchDigitalCV: React.FC<SearchDigitalCVProps> = ({ username: initialUser
     if (initialPin) setPin(initialPin);
   }, [initialUsername, initialPin]);
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     let valid = true;
     const newErrors = { username: "", pin: "" };
+
+    setApiError("");
 
     if (!username.trim()) {
       newErrors.username = "Username is required.";
@@ -36,8 +42,32 @@ const SearchDigitalCV: React.FC<SearchDigitalCVProps> = ({ username: initialUser
 
     setErrors(newErrors);
 
-    if (valid) {
-      console.log("Searching DigitalCV for:", { username, pin });
+    if (!valid) return;
+
+    try {
+      setIsLoading(true);
+      const response = await fetch("/api/serchCV", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username: username.trim(), pin: pin.trim() }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data?.id) {
+        setApiError(data?.error || "Invalid username or PIN.");
+        return;
+      }
+
+      router.push(`/CV?id=${data.id}`);
+      
+    } catch (error) {
+      console.error("Error searching CV:", error);
+      setApiError("Something went wrong. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -86,10 +116,12 @@ const SearchDigitalCV: React.FC<SearchDigitalCVProps> = ({ username: initialUser
       <div className="w-full max-w-sm">
         <button
           onClick={handleSearch}
+          disabled={isLoading}
           className="w-full bg-secondary text-white font-semibold py-2 rounded-md hover:bg-white hover:text-secondary hover:border-secondary hover:border-2 transition-colors"
         >
-          Search
+          {isLoading ? "Searching..." : "Search"}
         </button>
+        {apiError && <p className="text-sm text-red-500 mt-2 text-center">{apiError}</p>}
       </div>
     </div>
   );
