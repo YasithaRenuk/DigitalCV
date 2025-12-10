@@ -1,9 +1,13 @@
 import React from 'react'
+import { getAdminStats } from "@/actions/getAdminStats";
+import AdminDashboard from "@/components/admin/AdminDashboard";
 
-function page() {
+export default async function AdminPage() {
+  const stats = await getAdminStats();
+
   return (
-    <div>page</div>
+    <div className="p-8 pt-6">
+      <AdminDashboard stats={stats} />
+    </div>
   )
 }
-
-export default page
