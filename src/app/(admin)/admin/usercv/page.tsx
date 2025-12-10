@@ -12,7 +12,7 @@ import {
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { Search, Trash2, Edit, Eye, Save, X, Plus, FileText, Code, ArrowUp, ArrowDown, Layout } from "lucide-react";
+import { Search, Trash2, Edit, Eye, Save, X, Plus, FileText, Code, ArrowUp, ArrowDown, Layout, User, Users, FileUp, Check, Link as LinkIcon, Copy } from "lucide-react";
 import CvTemplate from "@/app/components/ShowCV/CvTemplate";
 import { Button } from "@/components/ui/button";
 import {
@@ -145,6 +145,8 @@ export default function UserCVPage() {
 
     fetchUserCVs();
   }, []);
+
+
 
   const filteredUserCVs = userCVs.filter((userCV) =>
     Object.values(userCV)
@@ -642,6 +644,12 @@ export default function UserCVPage() {
           </CardTitle>
 
           <div className="flex items-center gap-3 mr-10">
+            <Button 
+                onClick={() => window.location.href = '/admin/cv-builder'}
+                className="bg-primary text-white hover:bg-primary/90"
+            >
+                <Plus size={16} className="mr-2" /> Create New CV
+            </Button>
             {/* Search Box */}
             <div className="relative w-full sm:w-72">
               <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
@@ -983,6 +991,7 @@ export default function UserCVPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
     </div>
   );
 }

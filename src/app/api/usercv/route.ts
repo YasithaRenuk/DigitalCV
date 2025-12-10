@@ -24,6 +24,7 @@ export async function POST(request: NextRequest) {
     const username = formData.get('username') as string;
     const password = formData.get('password') as string;
     const cvFiles = formData.getAll('cvFiles') as File[];
+    const targetUserId = formData.get('userId') as string; // Optional: for admin use
 
     // Validate required fields
     if (!username || !password) {
@@ -31,6 +32,23 @@ export async function POST(request: NextRequest) {
         { error: 'Username and password are required' },
         { status: 400 }
       );
+    }
+    
+    // Determine the owner of the CV
+    let ownerId = (session.user as any).id;
+    
+    // If targetUserId is provided, check if the requester is an admin
+    if (targetUserId) {
+      if ((session.user as any).role === 'admin') {
+        ownerId = targetUserId;
+      } else {
+        // If not admin, ignore targetUserId or throw error? 
+        // Safer to ignore or strictly enforce. Let's enforce strictly to avoid confusion.
+        return NextResponse.json(
+          { error: 'Unauthorized to create CV for another user' },
+          { status: 403 }
+        );
+      }
     }
     
     const existingUserCV  = await UserCV.findOne({"username":username})
@@ -143,7 +161,7 @@ export async function POST(request: NextRequest) {
       states: 'pending',
       start_date,
       end_date,
-      userId: (session.user as any).id,
+      userId: ownerId,
     });
 
     return NextResponse.json(
