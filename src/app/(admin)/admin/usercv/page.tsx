@@ -12,7 +12,8 @@ import {
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { Search, Trash2, Edit, Eye, Save, X, Plus, FileText, Code, ArrowUp, ArrowDown } from "lucide-react";
+import { Search, Trash2, Edit, Eye, Save, X, Plus, FileText, Code, ArrowUp, ArrowDown, Layout } from "lucide-react";
+import CvTemplate from "@/app/components/ShowCV/CvTemplate";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -117,7 +118,7 @@ export default function UserCVPage() {
   const [viewCVDialogOpen, setViewCVDialogOpen] = useState(false);
   const [cvContent, setCvContent] = useState("");
   const [cvData, setCvData] = useState<any>({});
-  const [isRawView, setIsRawView] = useState(false);
+  const [activeTab, setActiveTab] = useState<"form" | "json" | "view">("form");
   const [isSavingCV, setIsSavingCV] = useState(false);
   const [viewingUserCVId, setViewingUserCVId] = useState<string | null>(null);
 
@@ -868,20 +869,28 @@ export default function UserCVPage() {
               <DialogTitle>Edit CV Content</DialogTitle>
               <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-lg">
                 <Button
-                  variant={!isRawView ? "secondary" : "ghost"}
+                  variant={activeTab === "form" ? "secondary" : "ghost"}
                   size="sm"
-                  onClick={() => setIsRawView(false)}
-                  className={!isRawView ? "shadow-sm bg-white text-primary" : ""}
+                  onClick={() => setActiveTab("form")}
+                  className={activeTab === "form" ? "shadow-sm bg-white text-primary" : ""}
                 >
                   <FileText size={14} className="mr-2" /> Form
                 </Button>
                 <Button
-                   variant={isRawView ? "secondary" : "ghost"}
+                   variant={activeTab === "json" ? "secondary" : "ghost"}
                    size="sm"
-                   onClick={() => setIsRawView(true)}
-                   className={isRawView ? "shadow-sm bg-white text-primary" : ""}
+                   onClick={() => setActiveTab("json")}
+                   className={activeTab === "json" ? "shadow-sm bg-white text-primary" : ""}
                 >
                   <Code size={14} className="mr-2" /> JSON
+                </Button>
+                <Button
+                   variant={activeTab === "view" ? "secondary" : "ghost"}
+                   size="sm"
+                   onClick={() => setActiveTab("view")}
+                   className={activeTab === "view" ? "shadow-sm bg-white text-primary" : ""}
+                >
+                  <Layout size={14} className="mr-2" /> View
                 </Button>
               </div>
             </div>
@@ -889,7 +898,7 @@ export default function UserCVPage() {
           </DialogHeader>
 
           <div className="flex-1 min-h-0 relative">
-             {isRawView ? (
+             {activeTab === "json" ? (
                  <textarea
                    className="w-full h-full p-4 font-mono text-sm resize-none focus:outline-none bg-slate-50"
                    value={cvContent}
@@ -899,6 +908,12 @@ export default function UserCVPage() {
                    }}
                    spellCheck={false}
                  />
+             ) : activeTab === "view" ? (
+                 <ScrollArea className="h-full bg-gray-50/50">
+                    <div className="p-8">
+                        <CvTemplate data={cvData} />
+                    </div>
+                 </ScrollArea>
              ) : (
                 <ScrollArea className="h-full">
                   <div className="p-6 space-y-6">
