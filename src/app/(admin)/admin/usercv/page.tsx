@@ -415,6 +415,13 @@ export default function UserCVPage() {
     }
   };
 
+  // Copy Link to Clipboard
+  const handleCopyLink = (id: string) => {
+    const link = `${window.location.origin}/showcv?id=${id}`;
+    navigator.clipboard.writeText(link);
+    alert("Link copied to clipboard!");
+  };
+
   const updateCVField = (section: string, value: any) => {
     const newData = { ...cvData, [section]: value };
     setCvData(newData);
@@ -733,11 +740,24 @@ export default function UserCVPage() {
                             size="icon"
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleEditClick(userCV);
+                            handleEditClick(userCV);
                             }}
                             className="h-8 w-8"
                           >
                             <Edit size={14} />
+                          </Button>
+                           {/* Copy Link Button */}
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleCopyLink(userCV.id);
+                            }}
+                            className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-50"
+                            title="Copy Link"
+                          >
+                            <LinkIcon size={14} />
                           </Button>
                            {/* Delete Button */}
                           <Button
