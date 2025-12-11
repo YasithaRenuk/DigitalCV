@@ -142,13 +142,13 @@ function SearchCVContent() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row min-h-[calc(100vh-150px)] pt-10 md:pt-1 gap-6 md:gap-0">
+    <div className="flex flex-col md:flex-row min-h-[calc(100vh-150px)] pt-10 md:pt-0 gap-6 md:gap-0">
       {/* CV Preview Section - Scrollable */}
-      <div className="w-full md:w-[50%] flex items-center justify-center mt-2 mb-2 md:mt-5 md:mb-5">
+      <div className="w-full md:w-[90%] flex items-center justify-center mt-2 mb-2 md:mt-5 md:mb-5">
         <ScrollArea
           className="relative bg-white shadow-md shadow-primary rounded-lg 
                    w-[90%] md:w-[80%] mx-auto border-2 border-primary 
-                   p-4 h-[calc(100vh-150px)] md:h-[80vh]"
+                   h-[calc(100vh-150px)] md:h-[80vh]"
         >
           {loadingCV && (
             <div className="w-full h-full flex items-center justify-center text-sm text-gray-500">
