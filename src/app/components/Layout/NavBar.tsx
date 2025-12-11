@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import Image from "next/image";
 import { useState } from "react";
@@ -10,24 +10,32 @@ import { useRouter } from "next/navigation";
 export default function Navbar() {
   const { data: session, status } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [loginLoading, setLoginLoading] = useState(false);
   const router = useRouter();
 
   const handleClickProfile = () => {
-    router.push("/profile"); 
-  }
-  
+    router.push("/profile");
+  };
+
+  const handleLogin = async () => {
+    try {
+      setLoginLoading(true);
+      // you can add callbackUrl if you want
+      await signIn("google");
+    } finally {
+      // usually redirect happens before this runs, but it's safe to keep
+      setLoginLoading(false);
+    }
+  };
+
   return (
     <nav className="w-full shadow-md shadow-primary left-0 z-50 bg-white">
       <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
         {/* Logo */}
-        <a
-          href="/"
-        >
+        <a href="/">
           <div className="flex items-center space-x-2">
             {/* <Image src="/logo.png" alt="DigitalCV Logo" width={40} height={40} /> */}
-            <span className="text-xl font-bold">
-              DigitalCV
-            </span>
+            <span className="text-xl font-bold">DigitalCV</span>
           </div>
         </a>
 
@@ -35,7 +43,10 @@ export default function Navbar() {
         <div className="hidden md:flex items-center space-x-4">
           {status === "authenticated" && session?.user ? (
             <div className="flex items-center space-x-3">
-              <span className="text-gray-800 dark:text-gray-200" onClick={handleClickProfile}>
+              <span
+                className="text-gray-800 dark:text-gray-200 cursor-pointer"
+                onClick={handleClickProfile}
+              >
                 {session.user.name}
               </span>
               {session.user.image && (
@@ -57,10 +68,18 @@ export default function Navbar() {
             </div>
           ) : (
             <Button
-              onClick={() => signIn("google")}
+              onClick={handleLogin}
               className="px-4 py-2"
+              disabled={loginLoading || status === "loading"}
             >
-              Log In
+              {loginLoading ? (
+                <div className="flex items-center gap-2">
+                  <span className="h-4 w-4 rounded-full border-2 border-t-transparent border-current animate-spin" />
+                  <span>Logging in...</span>
+                </div>
+              ) : (
+                "Log In"
+              )}
             </Button>
           )}
         </div>
@@ -90,7 +109,10 @@ export default function Navbar() {
                       className="rounded-full border border-gray-300"
                     />
                   )}
-                  <span className="text-gray-800 dark:text-gray-200 font-medium" onClick={handleClickProfile}>
+                  <span
+                    className="text-gray-800 dark:text-gray-200 font-medium cursor-pointer"
+                    onClick={handleClickProfile}
+                  >
                     {session.user.name}
                   </span>
                 </div>
@@ -104,10 +126,18 @@ export default function Navbar() {
               </>
             ) : (
               <Button
-                onClick={() => signIn("google")}
-                className="w-full text-left px-4 py-2 "
+                onClick={handleLogin}
+                className="w-full text-left px-4 py-2"
+                disabled={loginLoading || status === "loading"}
               >
-                Log In
+                {loginLoading ? (
+                  <div className="flex items-center gap-2">
+                    <span className="h-4 w-4 rounded-full border-2 border-t-transparent border-current animate-spin" />
+                    <span>Logging in...</span>
+                  </div>
+                ) : (
+                  "Log In"
+                )}
               </Button>
             )}
           </div>
