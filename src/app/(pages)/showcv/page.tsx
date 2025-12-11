@@ -142,6 +142,33 @@ function SearchCVContent() {
           >
             Submit
           </Button>
+          
+          <Button
+            className="max-w-2xs w-full mt-2 text-white bg-red-500 hover:bg-white hover:text-red-500 hover:border-red-500 hover:border-2"
+            variant="destructive"
+            onClick={async () => {
+              if (confirm("Are you sure you want to delete this CV and try again? This action cannot be undone.")) {
+                 try {
+                    const res = await fetch("/api/usercv/delete-own", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ id: id }),
+                    });
+                     if (res.ok) {
+                        router.push("/createcv");
+                     } else {
+                        const data = await res.json();
+                        alert(data.error || "Failed to delete CV");
+                     }
+                 } catch (err) {
+                    console.error("Error deleting CV", err);
+                    alert("An error occurred. Please try again.");
+                 }
+              }
+            }}
+          >
+            Try Again
+          </Button>
         </div>
       </div>
     </div>
