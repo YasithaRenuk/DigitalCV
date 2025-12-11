@@ -142,7 +142,7 @@ function SearchCVContent() {
           >
             Submit
           </Button>
-          
+          <span className="text-center w-full">or</span>
           <Button
             className="max-w-2xs w-full mt-2 text-white bg-red-500 hover:bg-white hover:text-red-500 hover:border-red-500 hover:border-2"
             variant="destructive"
