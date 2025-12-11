@@ -23,7 +23,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           <SidebarProvider>
             <AppSidebar />
             <div className="bg-[#FBF2ED] w-full">
-              <SidebarTrigger/>
+              {/* <SidebarTrigger/> */}
               {children}
             </div>
           </SidebarProvider>
