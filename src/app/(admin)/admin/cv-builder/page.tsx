@@ -25,6 +25,17 @@ import {
   CardDescription,
   CardFooter,
 } from "@/components/ui/card";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useRouter } from "next/navigation";
 import CvTemplate, { CVData } from "@/app/components/ShowCV/CvTemplate"; // Import CvTemplate and type
 
@@ -46,6 +57,8 @@ export default function CVBuilderPage() {
     link: string;
   } | null>(null);
   const [previewData, setPreviewData] = useState<CVData | null>(null); // State for preview data
+  const [retryDialogOpen, setRetryDialogOpen] = useState(false);
+  const [isDeletingCV, setIsDeletingCV] = useState(false);
 
   // Fetch Users for selection
   useEffect(() => {
@@ -116,6 +129,38 @@ export default function CVBuilderPage() {
       setCreateCVError(err.message || "Failed to create CV");
     } finally {
       setIsCreatingCV(false);
+    }
+  };
+
+  const handleRetryDelete = async () => {
+    if (!createdCVResult?.id) return;
+
+    setIsDeletingCV(true);
+    try {
+      const delRes = await fetch("/api/usercv", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: createdCVResult.id }),
+      });
+
+      if (delRes.ok) {
+        // Reset to Step 3 (Upload), keeping Step 1 & 2 data
+        setCreatedCVResult(null);
+        setPreviewData(null);
+        setNewCVFormData((prev) => ({
+          ...prev,
+          files: [],
+        })); // Clear files
+        setCreateStep(3);
+        setRetryDialogOpen(false);
+      } else {
+        alert("Failed to delete CV. Please try again.");
+      }
+    } catch (e) {
+      console.error("Delete error:", e);
+      alert("An error occurred.");
+    } finally {
+      setIsDeletingCV(false);
     }
   };
 
@@ -444,44 +489,31 @@ export default function CVBuilderPage() {
                     </a>
 
                     {/* Try Again Button */}
-                    <Button
-                      variant="destructive"
-                      size="lg"
-                      onClick={async () => {
-                        if (
-                          confirm(
-                            "Are you sure? This will delete the current CV and allow you to upload new files."
-                          )
-                        ) {
-                          try {
-                            const delRes = await fetch("/api/usercv", {
-                              method: "DELETE",
-                              headers: { "Content-Type": "application/json" },
-                              body: JSON.stringify({ id: createdCVResult.id }),
-                            });
-
-                            if (delRes.ok) {
-                              // Reset to Step 3 (Upload), keeping Step 1 & 2 data
-                              setCreatedCVResult(null);
-                              setPreviewData(null);
-                              setNewCVFormData((prev) => ({
-                                ...prev,
-                                files: [],
-                              })); // Clear files
-                              setCreateStep(3);
-                            } else {
-                              alert("Failed to delete CV. Please try again.");
-                            }
-                          } catch (e) {
-                            console.error("Delete error:", e);
-                            alert("An error occurred.");
-                          }
-                        }
-                      }}
-                    >
-                      <ArrowLeft size={18} className="mr-2" /> Try Again (Delete
-                      & Re-upload)
-                    </Button>
+                    <AlertDialog open={retryDialogOpen} onOpenChange={setRetryDialogOpen}>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="destructive"
+                          size="lg"
+                        >
+                          <ArrowLeft size={18} className="mr-2" /> Try Again (Delete
+                          & Re-upload)
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete this CV?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This will delete the generated CV and let you upload new files. This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel disabled={isDeletingCV}>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={handleRetryDelete} disabled={isDeletingCV}>
+                            {isDeletingCV ? "Deleting..." : "Delete & Re-upload"}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
 
                     <Button
                       variant="outline"

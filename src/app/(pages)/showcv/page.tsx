@@ -8,6 +8,17 @@ import CvFileUploader from "@/app/components/ShowCV/CvFileUploader";
 import { Button } from "@/components/ui/button";
 import CvTemplate, { CVData } from "@/app/components/ShowCV/CvTemplate";
 import { ScrollArea } from "@/components/ui/scroll-area"; // ✅ ADD THIS
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 type GetCVResponse = {
   success: boolean;
@@ -23,6 +34,8 @@ function SearchCVContent() {
   const [cvData, setCvData] = useState<CVData | null>(null);
   const [loadingCV, setLoadingCV] = useState<boolean>(true);
   const [cvError, setCvError] = useState<string | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     const fetchCV = async () => {
@@ -103,6 +116,31 @@ function SearchCVContent() {
     }
   };
 
+  const handleDeleteCV = async () => {
+    if (!id) return;
+
+    setIsDeleting(true);
+    try {
+      const res = await fetch("/api/usercv/delete-own", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: id }),
+      });
+      if (res.ok) {
+        router.push("/createcv");
+      } else {
+        const data = await res.json();
+        alert(data.error || "Failed to delete CV");
+      }
+    } catch (err) {
+      console.error("Error deleting CV", err);
+      alert("An error occurred. Please try again.");
+    } finally {
+      setIsDeleting(false);
+      setDeleteDialogOpen(false);
+    }
+  };
+
   return (
     <div className="flex flex-col md:flex-row min-h-[calc(100vh-150px)] pt-10 md:pt-1 gap-6 md:gap-0">
       {/* CV Preview Section - Scrollable */}
@@ -143,32 +181,30 @@ function SearchCVContent() {
             Submit
           </Button>
           <span className="text-center w-full">or</span>
-          <Button
-            className="max-w-2xs w-full mt-2 text-white bg-red-500 hover:bg-white hover:text-red-500 hover:border-red-500 hover:border-2"
-            variant="destructive"
-            onClick={async () => {
-              if (confirm("Are you sure you want to delete this CV and try again? This action cannot be undone.")) {
-                 try {
-                    const res = await fetch("/api/usercv/delete-own", {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ id: id }),
-                    });
-                     if (res.ok) {
-                        router.push("/createcv");
-                     } else {
-                        const data = await res.json();
-                        alert(data.error || "Failed to delete CV");
-                     }
-                 } catch (err) {
-                    console.error("Error deleting CV", err);
-                    alert("An error occurred. Please try again.");
-                 }
-              }
-            }}
-          >
-            Try Again
-          </Button>
+          <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+            <AlertDialogTrigger asChild>
+              <Button
+                className="max-w-2xs w-full mt-2 text-white bg-red-500 hover:bg-white hover:text-red-500 hover:border-red-500 hover:border-2"
+                variant="destructive"
+              >
+                Try Again
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete this CV?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will delete the current CV so you can upload again. This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDeleteCV} disabled={isDeleting}>
+                  {isDeleting ? "Deleting..." : "Delete & Retry"}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
     </div>
