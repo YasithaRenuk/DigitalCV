@@ -11,6 +11,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Search, Trash2 } from "lucide-react";
@@ -36,6 +47,8 @@ export default function Inbox() {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Fetch reports from API
   useEffect(() => {
@@ -108,10 +121,7 @@ export default function Inbox() {
   const handleDelete = async () => {
     if (selectedReports.length === 0) return;
 
-    if (!confirm(`Are you sure you want to delete ${selectedReports.length} report(s)?`)) {
-      return;
-    }
-
+    setIsDeleting(true);
     try {
       const response = await fetch("/api/reports", {
         method: "DELETE",
@@ -127,12 +137,15 @@ export default function Inbox() {
         // Remove deleted reports from state
         setReports((prev) => prev.filter((r) => !selectedReports.includes(r.id)));
         setSelectedReports([]);
+        setDeleteDialogOpen(false);
       } else {
         alert(`Error: ${data.error || "Failed to delete reports"}`);
       }
     } catch (err) {
       console.error("Error deleting reports:", err);
       alert("Failed to delete reports");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -147,14 +160,31 @@ export default function Inbox() {
           <div className="flex items-center gap-3 mr-10">
             {/* Delete Button */}
             {selectedReports.length > 0 && (
-              <Button
-                variant="destructive"
-                size="icon"
-                onClick={handleDelete}
-                className="rounded-full"
-              >
-                <Trash2 size={18} />
-              </Button>
+              <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="destructive"
+                    size="icon"
+                    className="rounded-full"
+                  >
+                    <Trash2 size={18} />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete selected reports?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will permanently remove {selectedReports.length} report(s). This action cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDelete} disabled={isDeleting}>
+                      {isDeleting ? "Deleting..." : "Delete"}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             )}
 
             {/* Search Box */}

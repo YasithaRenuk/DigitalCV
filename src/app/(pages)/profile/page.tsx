@@ -52,23 +52,23 @@ const ProfilePage = () => {
           <div className="flex-1 flex flex-col gap-1 md:gap-2 mt-2 md:mt-0 text-center md:text-left">
             <div className="flex flex-col md:flex-row md:items-center md:gap-2 justify-center md:justify-start">
               <h2 className="text-xl md:text-2xl font-semibold">{name}</h2>
-              <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-md border mt-1 md:mt-0">Membership</span>
+              {/* <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-md border mt-1 md:mt-0">Membership</span> */}
             </div>
             <p className="text-gray-500">{email}</p>
-            <p className="mt-2">
+            {/* <p className="mt-2">
               Profile Strength:{" "}
               <span className="px-2 py-1 bg-orange-100 text-orange-800 rounded-md">{profileStrength}</span>
-            </p>
+            </p> */}
           </div>
         </div>
 
         {/* Right Side: Username, PIN, Days Left */}
-        <div className="mt-4 md:mt-0 text-center md:text-right w-full md:w-auto">
+        {/* <div className="mt-4 md:mt-0 text-center md:text-right w-full md:w-auto">
           <p className="text-gray-700">
             username: <span className="font-medium">{username}</span> | PIN: <span className="font-medium">{pin}</span>
           </p>
           <p className="mt-1 text-yellow-700 font-medium">{daysLeft} days left</p>
-        </div>
+        </div> */}
       </div>
 
       {/* Action Buttons */}
