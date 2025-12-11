@@ -34,7 +34,7 @@ export default function Instructions() {
         </div>
 
         {/* 4 */}
-        <div className="flex items-start">
+        {/* <div className="flex items-start">
           <span className="w-2 h-2 bg-secondary rounded-full mt-1 mr-2"></span>
           <div>
             <p>Vorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
@@ -42,10 +42,10 @@ export default function Instructions() {
               Nunc vulputate libero et velit interdum, ac aliquet odio mattis.
             </p>
           </div>
-        </div>
+        </div> */}
 
         {/* 5 */}
-        <div className="flex items-start">
+        {/* <div className="flex items-start">
           <span className="w-2 h-2 bg-secondary rounded-full mt-1 mr-2"></span>
           <div>
             <p>Vorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
@@ -53,7 +53,7 @@ export default function Instructions() {
               Nunc vulputate libero et velit interdum, ac aliquet odio mattis.
             </p>
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* Illustration */}

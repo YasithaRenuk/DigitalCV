@@ -165,7 +165,7 @@ export default function CVBuilderPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[90vh] p-8">
+    <div className="flex flex-col items-center justify-center min-h-[90vh] pl-8 pr-8">
       <div className="w-full  mb-6 flex items-center">
         <h1 className="text-3xl font-bold text-gray-800">CV Builder</h1>
       </div>
