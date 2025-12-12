@@ -27,7 +27,7 @@ export default function Hero() {
       {/* Left Section */}
       <div className="flex flex-col items-start text-left space-y-6 lg:w-1/2 ml-0 md:ml-28">
         <p className="text-lg text-primary font-medium">
-          5861 <span className="text-gray-600">resumes created today</span>
+          5861 <span className="text-gray-600">CVs created today</span>
         </p>
 
         <h2 className="text-4xl font-medium text-gray-700">Welcome To</h2>
@@ -35,15 +35,15 @@ export default function Hero() {
           DIGITAL<span className="text-black">CV</span>
         </h1>
 
-        <p className="text-gray-700 text-xl lg:text-3xl font-medium">
+        <p className="text-gray-700 text-lg lg:text-2xl font-medium">
           Your Gateway To Professional Success
         </p>
 
         <div className="flex space-x-5">
-          <Button className="font-bold px-5" onClick={onClickCreate}>
+          <Button className="font-bold md:px-20" onClick={onClickCreate}>
             CREATE CV
           </Button>
-          <Button className="font-bold px-5" onClick={onClickSearch}>
+          <Button className="font-bold md:px-20" onClick={onClickSearch}>
             SEARCH CV
           </Button>
         </div>
@@ -51,7 +51,7 @@ export default function Hero() {
         <div className="flex flex-col sm:flex-row sm:space-x-10 space-y-3 sm:space-y-0 mt-6">
           <div className="flex flex-col items-start space-y-1">
             <span className="bg-[#F1E829] text-secondary font-bold px-3 py-1 rounded text-lg">
-              48%
+              84%
             </span>
             <span className="text-gray-700 text-lg">
               more likely to get hired

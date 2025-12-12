@@ -2,12 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import connectDB from "@/lib/mongodb";
 import UserCV from "@/models/UserCV";
+import User from "@/models/User";
 
-export async function POST(request: NextRequest) {
+async function handleDelete(request: NextRequest) {
   try {
     const session = await auth();
 
-    if (!session || !session.user || !(session.user as any).id) {
+    if (!session || !session.user || !session.user.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -19,25 +20,22 @@ export async function POST(request: NextRequest) {
 
     await connectDB();
 
+    // Find the user by email
+    const user = await User.findOne({ email: session.user.email });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
     const userCV = await UserCV.findById(id);
 
     if (!userCV) {
       return NextResponse.json({ error: "CV not found" }, { status: 404 });
     }
 
-    // Check ownership
-    // If admin, they can delete any (though this specific endpoint is 'delete-own', reuse logic if helpful)
-    // But requirement is 'delete-own', so typically strict.
-    // However, for admin panel usage, we might need admin override.
-    // But wait, the admin panel uses the generalized DELETE endpoint usually?
-    // Let's check `api/usercv/route.ts` DELETE method. It exists and is admin-only.
-    // So this endpoint is SPECIFICALLY for the regular user on `showcv` page.
-    // Re-verify: User on `showcv` page is the owner of the CV.
-
-    const currentUserId = (session.user as any).id;
-    
-    if (userCV.userId.toString() !== currentUserId) {
-        return NextResponse.json({ error: "You are not authorized to delete this CV" }, { status: 403 });
+    // Check ownership - compare with userId field
+    if (userCV.userId !== (user._id as any).toString()) {
+      return NextResponse.json({ error: "You are not authorized to delete this CV" }, { status: 403 });
     }
 
     await UserCV.findByIdAndDelete(id);
@@ -50,4 +48,12 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+export async function POST(request: NextRequest) {
+  return handleDelete(request);
+}
+
+export async function DELETE(request: NextRequest) {
+  return handleDelete(request);
 }

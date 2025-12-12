@@ -178,7 +178,7 @@ function SearchCVContent() {
             variant="secondary"
             onClick={handleSubmit}
           >
-            Submit
+            Make CV Online With Payment
           </Button>
           <span className="text-center w-full">or</span>
           <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>

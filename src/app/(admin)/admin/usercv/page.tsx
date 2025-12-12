@@ -12,7 +12,7 @@ import {
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { Search, Trash2, Edit, Eye, Save, X, Plus, FileText, Code, ArrowUp, ArrowDown, Layout, User, Users, FileUp, Check, Link as LinkIcon, Copy } from "lucide-react";
+import { Search, Trash2, Edit, Eye, Save, X, Plus, FileText, Code, ArrowUp, ArrowDown, Layout, User, Users, FileUp, Check, Link as LinkIcon, Copy, FileDown } from "lucide-react";
 import CvTemplate from "@/app/components/ShowCV/CvTemplate";
 import { Button } from "@/components/ui/button";
 import {
@@ -148,12 +148,23 @@ export default function UserCVPage() {
 
 
 
-  const filteredUserCVs = userCVs.filter((userCV) =>
-    Object.values(userCV)
+  const filteredUserCVs = userCVs.filter((userCV) => {
+    const email = userCV.user?.email ?? "";
+
+    // keep your existing fields + include nested email
+    const haystack = [
+      ...Object.values(userCV).map((v) => {
+        // avoid "[object Object]" for nested objects
+        if (v && typeof v === "object") return "";
+        return String(v ?? "");
+      }),
+      email,
+    ]
       .join(" ")
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  );
+      .toLowerCase();
+
+    return haystack.includes(searchTerm.toLowerCase());
+  });
 
   // Pagination calculations
   const totalPages = Math.ceil(filteredUserCVs.length / itemsPerPage);
@@ -415,6 +426,37 @@ export default function UserCVPage() {
     }
   };
 
+  // Export Users to Excel
+  const handleExport = async () => {
+    try {
+      const response = await fetch('/api/users/export');
+      
+      if (!response.ok) {
+        const data = await response.json();
+        alert(`Error: ${data.error || 'Failed to export users'}`);
+        return;
+      }
+      
+      // Get the blob from response
+      const blob = await response.blob();
+      
+      // Create a download link
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `users_export_${new Date().toISOString().split('T')[0]}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      
+      // Cleanup
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('Error exporting users:', error);
+      alert('Failed to export users');
+    }
+  };
+
   // Copy Link to Clipboard
   const handleCopyLink = (id: string) => {
     const link = `${window.location.origin}/showcv?id=${id}`;
@@ -657,6 +699,13 @@ export default function UserCVPage() {
             >
                 <Plus size={16} className="mr-2" /> Create New CV
             </Button>
+            <Button 
+                onClick={handleExport}
+                variant="outline"
+                className="border-primary text-primary hover:bg-primary/10"
+            >
+                <FileDown size={16} className="mr-2" /> Export
+            </Button>
             {/* Search Box */}
             <div className="relative w-full sm:w-72">
               <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
@@ -692,6 +741,8 @@ export default function UserCVPage() {
                   <TableHead className="text-gray-700 font-semibold">Email</TableHead>
                   <TableHead className="text-gray-700 font-semibold">State</TableHead>
                   <TableHead className="text-gray-700 font-semibold">Joined Date</TableHead>
+                  <TableHead className="text-gray-700 font-semibold">Start Date</TableHead>
+                  <TableHead className="text-gray-700 font-semibold">End Date</TableHead>
                   <TableHead className="text-gray-700 font-semibold">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -719,6 +770,8 @@ export default function UserCVPage() {
                         <Badge className={getStateColor(userCV.states)}>{userCV.states}</Badge>
                       </TableCell>
                       <TableCell>{formatDate(userCV.createdAt)}</TableCell>
+                      <TableCell>{formatDate(userCV.start_date)}</TableCell>
+                      <TableCell>{formatDate(userCV.end_date)}</TableCell>
                       <TableCell>
                         <div className="flex gap-2">
                            {/* Eye Button */}
