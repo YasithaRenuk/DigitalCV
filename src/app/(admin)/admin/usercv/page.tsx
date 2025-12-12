@@ -148,12 +148,23 @@ export default function UserCVPage() {
 
 
 
-  const filteredUserCVs = userCVs.filter((userCV) =>
-    Object.values(userCV)
+  const filteredUserCVs = userCVs.filter((userCV) => {
+    const email = userCV.user?.email ?? "";
+
+    // keep your existing fields + include nested email
+    const haystack = [
+      ...Object.values(userCV).map((v) => {
+        // avoid "[object Object]" for nested objects
+        if (v && typeof v === "object") return "";
+        return String(v ?? "");
+      }),
+      email,
+    ]
       .join(" ")
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  );
+      .toLowerCase();
+
+    return haystack.includes(searchTerm.toLowerCase());
+  });
 
   // Pagination calculations
   const totalPages = Math.ceil(filteredUserCVs.length / itemsPerPage);
@@ -692,6 +703,8 @@ export default function UserCVPage() {
                   <TableHead className="text-gray-700 font-semibold">Email</TableHead>
                   <TableHead className="text-gray-700 font-semibold">State</TableHead>
                   <TableHead className="text-gray-700 font-semibold">Joined Date</TableHead>
+                  <TableHead className="text-gray-700 font-semibold">Start Date</TableHead>
+                  <TableHead className="text-gray-700 font-semibold">End Date</TableHead>
                   <TableHead className="text-gray-700 font-semibold">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -719,6 +732,8 @@ export default function UserCVPage() {
                         <Badge className={getStateColor(userCV.states)}>{userCV.states}</Badge>
                       </TableCell>
                       <TableCell>{formatDate(userCV.createdAt)}</TableCell>
+                      <TableCell>{formatDate(userCV.start_date)}</TableCell>
+                      <TableCell>{formatDate(userCV.end_date)}</TableCell>
                       <TableCell>
                         <div className="flex gap-2">
                            {/* Eye Button */}
