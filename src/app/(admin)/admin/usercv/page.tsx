@@ -12,7 +12,7 @@ import {
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { Search, Trash2, Edit, Eye, Save, X, Plus, FileText, Code, ArrowUp, ArrowDown, Layout, User, Users, FileUp, Check, Link as LinkIcon, Copy } from "lucide-react";
+import { Search, Trash2, Edit, Eye, Save, X, Plus, FileText, Code, ArrowUp, ArrowDown, Layout, User, Users, FileUp, Check, Link as LinkIcon, Copy, FileDown } from "lucide-react";
 import CvTemplate from "@/app/components/ShowCV/CvTemplate";
 import { Button } from "@/components/ui/button";
 import {
@@ -426,6 +426,37 @@ export default function UserCVPage() {
     }
   };
 
+  // Export Users to Excel
+  const handleExport = async () => {
+    try {
+      const response = await fetch('/api/users/export');
+      
+      if (!response.ok) {
+        const data = await response.json();
+        alert(`Error: ${data.error || 'Failed to export users'}`);
+        return;
+      }
+      
+      // Get the blob from response
+      const blob = await response.blob();
+      
+      // Create a download link
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `users_export_${new Date().toISOString().split('T')[0]}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      
+      // Cleanup
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('Error exporting users:', error);
+      alert('Failed to export users');
+    }
+  };
+
   // Copy Link to Clipboard
   const handleCopyLink = (id: string) => {
     const link = `${window.location.origin}/showcv?id=${id}`;
@@ -667,6 +698,13 @@ export default function UserCVPage() {
                 className="bg-primary text-white hover:bg-primary/90"
             >
                 <Plus size={16} className="mr-2" /> Create New CV
+            </Button>
+            <Button 
+                onClick={handleExport}
+                variant="outline"
+                className="border-primary text-primary hover:bg-primary/10"
+            >
+                <FileDown size={16} className="mr-2" /> Export
             </Button>
             {/* Search Box */}
             <div className="relative w-full sm:w-72">
