@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Home, Inbox, Users, FileText, LogOut } from "lucide-react";
+import { Home, Inbox, Users, FileText, LogOut,BadgeDollarSign  } from "lucide-react";
 import { signOut } from "next-auth/react";
 
 import {
@@ -27,12 +27,12 @@ const items = [
     icon: FileText,
   },
   {
-    title: "inbox",
+    title: "Inbox",
     url: "/admin/inbox",
     icon: Inbox,
   },
   {
-    title: "users",
+    title: "Users",
     url: "/admin/users",
     icon: Users,
   },
@@ -40,6 +40,11 @@ const items = [
     title: "CV's",
     url: "/admin/usercv",
     icon: FileText,
+  },
+  {
+    title: "Payments",
+    url: "/admin/payments",
+    icon: BadgeDollarSign,
   },
 ];
 
