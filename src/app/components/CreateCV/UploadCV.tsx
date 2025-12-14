@@ -73,24 +73,25 @@ export default function UploadCV() {
       const data = await response.json();
 
       if (!response.ok) {
-        // Handle specific error cases
-        const errorMessage = data.error || "Failed to create UserCV";
-        
-        // Check if it's a username duplicate error
-        if (errorMessage.toLowerCase().includes("username already exists") || 
-            errorMessage.toLowerCase().includes("duplicate")) {
-          setErrors((prev) => ({ 
-            ...prev, 
-            username: errorMessage 
+        const errorMessage = data?.error || "Failed to create UserCV";
+
+        if (response.status === 409) {
+          // show as field error (username area)
+          setErrors((prev) => ({
+            ...prev,
+            username: errorMessage,
           }));
-        } else if (errorMessage.toLowerCase().includes("unauthorized")) {
+          return; // stop here
+        }
+
+        if (response.status === 401 || response.status === 403) {
           setBackendError("You are not authorized to perform this action. Please log in again.");
           setTimeout(() => router.push("/loginpage"), 2000);
-        } else {
-          setBackendError(errorMessage);
+          return;
         }
-        
-        throw new Error(errorMessage);
+
+        setBackendError(errorMessage);
+        return;
       }
       
       setUsername("");

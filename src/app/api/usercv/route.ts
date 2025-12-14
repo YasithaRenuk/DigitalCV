@@ -50,7 +50,16 @@ export async function POST(request: NextRequest) {
         );
       }
     }
-    
+
+    const existingCount = await UserCV.countDocuments({ userId: ownerId });
+
+    if (existingCount >= 3) {
+      return NextResponse.json(
+        { error: "CV limit reached. You can only create up to 3 CVs." },
+        { status: 409 } 
+      );
+    }
+
     const existingUserCV  = await UserCV.findOne({"username":username})
     
     if (existingUserCV) {
