@@ -8,10 +8,10 @@ export default function LoginPage() {
     <div className="flex flex-col items-center justify-center  px-4 text-center">
       <div className="max-w-md w-full space-y-6">
         <h1 className="text-2xl font-semibold">Login To Your Account</h1>
-        <p className="text-gray-500 text-sm">
+        {/* <p className="text-gray-500 text-sm">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc
           vulputate libero et velit interdum, ac aliquet odio mattis.
-        </p>
+        </p> */}
 
         <Button
           onClick={() => signIn("google")}
