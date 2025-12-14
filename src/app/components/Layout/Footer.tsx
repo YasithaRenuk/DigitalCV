@@ -8,10 +8,10 @@ export default function Footer() {
           © 2025 ALL RIGHTS RESERVED.
         </p>
         <div className="flex gap-4">
-          <a href="#" className="hover:text-primary transition-colors">
+          <a href="/TAC" className="hover:text-primary transition-colors">
             T &amp; C
           </a>
-          <a href="#" className="hover:text-primary transition-colors">
+          <a href="/privacyPolicy" className="hover:text-primary transition-colors">
             Privacy Policy
           </a>
           <a
