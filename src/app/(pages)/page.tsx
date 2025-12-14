@@ -25,7 +25,7 @@ export default function Home() {
       <div className="w-full flex justify-center">
         <div className="shadow-2xl w-[1183px] h-[383px] m-10 bg-white rounded-lg justify-center flex">
           <Button className="mt-64" onClick={onClickCreate}>
-            Create Your CV Now!
+            Create your DigitalCV Now !
           </Button>
         </div>
       </div>
