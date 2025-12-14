@@ -28,6 +28,13 @@ import { Badge } from "@/components/ui/badge";
 import { Pagination } from "@/components/ui/pagination";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // Default schemas for adding new items
 const CV_SCHEMAS: any = {
@@ -110,6 +117,7 @@ export default function UserCVPage() {
     password: "",
     start_date: "",
     end_date: "",
+    states: "pending" as "pending" | "active" | "deactive",
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -280,6 +288,7 @@ export default function UserCVPage() {
       password: userCV.password,
       start_date: userCV.start_date ? new Date(userCV.start_date).toISOString().split("T")[0] : "",
       end_date: userCV.end_date ? new Date(userCV.end_date).toISOString().split("T")[0] : "",
+      states: userCV.states,
     });
     setEditDialogOpen(true);
   };
@@ -300,6 +309,7 @@ export default function UserCVPage() {
           password: editFormData.password,
           start_date: editFormData.start_date,
           end_date: editFormData.end_date,
+          states: editFormData.states,
         }),
       });
 
@@ -316,6 +326,7 @@ export default function UserCVPage() {
                   password: data.userCV.password,
                   start_date: data.userCV.start_date,
                   end_date: data.userCV.end_date,
+                  states: data.userCV.states,
                 }
               : ucv
           )
@@ -903,6 +914,24 @@ export default function UserCVPage() {
                   setEditFormData({ ...editFormData, password: e.target.value })
                 }
               />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="states">State</Label>
+              <Select
+                value={editFormData.states}
+                onValueChange={(value: "pending" | "active" | "deactive") =>
+                  setEditFormData({ ...editFormData, states: value })
+                }
+              >
+                <SelectTrigger id="states">
+                  <SelectValue placeholder="Select state" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="deactive">Deactive</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="grid gap-2">
               <Label htmlFor="start_date">Start Date</Label>
