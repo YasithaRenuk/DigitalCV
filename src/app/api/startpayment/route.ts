@@ -3,6 +3,7 @@ import connectDB from "@/lib/mongodb";
 import User from "@/models/User";
 import UserCV from "@/models/UserCV";
 import Payment from "@/models/Payment";
+import { serverEnv } from "@/config/server-env";
 
 export async function POST( request: NextRequest) {
   try {
@@ -41,8 +42,8 @@ export async function POST( request: NextRequest) {
     const Paymnetbody = {
       amount:transaction.amount,
       currency:transaction.currency,
-      redirectUrl:process.env.NEXTAUTH_URL as string + "/paymentStates",
-      webhook:process.env.NEXTAUTH_URL as string + "/api/savepayment",
+      redirectUrl: serverEnv.nextAuthUrl + "/paymentStates",
+      webhook: serverEnv.nextAuthUrl + "/api/savepayment",
       localId:transaction.id,
       customerReference:transaction.userID,
     }
@@ -54,12 +55,12 @@ export async function POST( request: NextRequest) {
       }
     )
 
-    const response = await fetch(process.env.GENIE_API_URL as string , {
+    const response = await fetch(serverEnv.genieApiUrl, {
       method: "POST",
       headers: { 
         "Content-Type": "application/json",
         "Accept": 'application/json',
-        "Authorization":  process.env.GENIE_API_KEY as string 
+        "Authorization": serverEnv.genieApiKey
       },
       body:JSON.stringify(Paymnetbody) ,
     });

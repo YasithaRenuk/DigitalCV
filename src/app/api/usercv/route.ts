@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth';
 import connectDB from '@/lib/mongodb';
 import UserCV from '@/models/UserCV';
 import User from '@/models/User';
+import { serverEnv } from '@/config/server-env';
 
 export async function POST(request: NextRequest) {
   try {
@@ -75,7 +76,7 @@ export async function POST(request: NextRequest) {
       apiFormData.append('file', file);
     });
 
-    const ocrResponse = await fetch(process.env.AI_URL + '/cv/ocr-and-structure',
+    const ocrResponse = await fetch(serverEnv.aiUrl + '/cv/ocr-and-structure',
       {
         method: 'POST',
         body: apiFormData,
@@ -118,7 +119,7 @@ export async function POST(request: NextRequest) {
       references: ocrJson.references ?? [],
     };
 
-    const enhanceCVResponse = await fetch(process.env.AI_URL + '/cv/enhance',
+    const enhanceCVResponse = await fetch(serverEnv.aiUrl + '/cv/enhance',
       {
         method: 'POST',
         headers: {
@@ -367,4 +368,3 @@ export async function PUT(request: NextRequest) {
     );
   }
 }
-
