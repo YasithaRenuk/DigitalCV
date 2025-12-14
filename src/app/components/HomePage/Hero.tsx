@@ -41,7 +41,7 @@ export default function Hero() {
 
         <div className="flex space-x-5">
           <Button className="font-bold md:px-20" onClick={onClickCreate}>
-            CREATE CV
+            GENERATE YOUR CV WITH US
           </Button>
           <Button className="font-bold md:px-20" onClick={onClickSearch}>
             SEARCH CV

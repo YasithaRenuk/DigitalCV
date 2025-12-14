@@ -8,19 +8,19 @@ export default function FeatureSection() {
       icon: <CheckSquare className="w-10 h-10 text-white" />,
       title: "ATS - Optimized",
       description:
-        "Forem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.",
+        "Convert your resume or handwritten CV into a world-recognized, ATS-friendly Digital CV",
     },
     {
       icon: <Lock className="w-10 h-10 text-white" />,
       title: "Verified & Secure",
       description:
-        "Forem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.",
+        "Your CV is hosted on a verified, world-recognized DigitalCV platform. Host your portfolio here to become even more professional and secure.",
     },
     {
       icon: <Globe className="w-10 h-10 text-white" />,
       title: "Global Access",
       description:
-        "Forem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.",
+        "Create a unique username and remember your 4-digit PIN. Access your DigitalCV anywhere, anytime",
     },
   ];
 

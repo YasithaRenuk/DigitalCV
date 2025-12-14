@@ -17,6 +17,7 @@ export async function POST( request: NextRequest) {
     const payment = await Payment.findByIdAndUpdate(
       localId,
       {
+        transactionId:body.transactionId,
         rawResponse: body,
         status: state,
       },

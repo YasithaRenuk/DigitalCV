@@ -7,6 +7,7 @@ export interface IPaymet extends Document{
     currency:string;
     genieTransactionId:string;
     status:string;
+    transactionId:string;
     rawRequest:Object;
     rawResponse:Object;
     callbackData:Object;
@@ -34,6 +35,9 @@ const PaymentSchema :Schema = new Schema(
             default : 'LKR'
         },
         genieTransactionId : {
+            type : String
+        },
+        transactionId : {
             type : String
         },
         status: {

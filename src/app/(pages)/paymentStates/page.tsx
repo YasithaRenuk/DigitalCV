@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense } from "react"
+import { Suspense, useEffect, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import {
   CheckCircle2,
@@ -67,7 +67,39 @@ function PaymentStatus() {
   const state = searchParams.get("state")
   const signature = searchParams.get("signature")
 
+  const [username, setUsername] = useState<string | null>(null)
+  const [pin, setPin] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
+
   const stateUI = getStatusUI(state)
+
+  // Fetch username and PIN based on transaction ID
+  useEffect(() => {
+    const fetchPaymentDetails = async () => {
+      if (!transactionId) {
+        setLoading(false)
+        return
+      }
+
+      try {
+        const response = await fetch(
+          `/api/payment-details?transactionId=${transactionId}`
+        )
+        const data = await response.json()
+
+        if (data.success) {
+          setUsername(data.username)
+          setPin(data.pin)
+        }
+      } catch (error) {
+        console.error("Error fetching payment details:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchPaymentDetails()
+  }, [transactionId])
 
   const badgeColor =
     {
@@ -161,6 +193,42 @@ function PaymentStatus() {
                 </span>
               </div>
             </div>
+
+            {/* Username */}
+            {!loading && username && (
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                  Username
+                </label>
+                <div
+                  className="mt-2 flex items-center gap-2 bg-secondary/50 rounded-lg p-3 group cursor-pointer hover:bg-secondary/70 transition-colors"
+                  onClick={() => handleCopy(username || "")}
+                >
+                  <code className="text-sm font-mono text-foreground flex-1 break-all">
+                    {username}
+                  </code>
+                  <Copy className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
+                </div>
+              </div>
+            )}
+
+            {/* PIN */}
+            {!loading && pin && (
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                  PIN
+                </label>
+                <div
+                  className="mt-2 flex items-center gap-2 bg-secondary/50 rounded-lg p-3 group cursor-pointer hover:bg-secondary/70 transition-colors"
+                  onClick={() => handleCopy(pin || "")}
+                >
+                  <code className="text-sm font-mono text-foreground flex-1 break-all">
+                    {pin}
+                  </code>
+                  <Copy className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
+                </div>
+              </div>
+            )}
 
             {/* Signature */}
             <div>
