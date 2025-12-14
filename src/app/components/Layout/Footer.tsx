@@ -20,7 +20,13 @@ export default function Footer() {
           >
             Contact Us
           </a>
+          <span className="text-[10px] mt-2 hidden md:block">
+            Powerd by Rootfo
+          </span>
         </div>
+          <span className="text-[10px] mt-2 block md:hidden">
+            Powerd by Rootfo
+          </span>
       </div>
     </footer>
   );

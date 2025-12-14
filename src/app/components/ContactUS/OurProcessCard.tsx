@@ -20,7 +20,7 @@ export default function OurProcessCard() {
   ];
 
   return (
-    <div className="max-w-2xl mx-auto shadow-md shadow-primary border-primary border-2 rounded-xl p-6 md:p-8 text-center ">
+    <div className="max-w-2xl mx-auto shadow-md shadow-primary border-primary border-2 rounded-xl p-6 md:p-8 text-center md:mt-2.5 md:mb-2.5">
       {/* Header */}
       <h2 className="text-2xl md:text-3xl font-semibold mb-2">Our Process</h2>
      
