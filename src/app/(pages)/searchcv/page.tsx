@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import Image from "next/image";
 import SearchDigitalCV from "../../components/SearchCV/SearchDigitalCV";
 import { useSearchParams } from "next/navigation";
-import img from '../../../../public/p1.webp' 
+import img from '../../../../public/simage.jpeg' 
 
 function SearchCVContent() {
   const searchParams = useSearchParams();

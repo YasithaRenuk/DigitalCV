@@ -12,7 +12,7 @@ function ContactUSContent() {
 
   return (
     <div className="flex flex-col md:flex-row min-h-[calc(100vh-150px)] pt-10 md:pt-1 items-center justify-center">
-      <div className="w-full md:order-2 md:w-[50%] flex items-center justify-center">
+      <div className="w-full md:order-2 md:w-[50%] flex items-center justify-center mt-2.5 mb-2.5">
         <InquiryForm reasonTopic={reasonTopic} />
       </div>
 

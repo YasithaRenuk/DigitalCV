@@ -18,7 +18,6 @@ const ReportSchema: Schema = new Schema(
     },
     lastname: {
       type: String,
-      required: true,
     },
     topic: {
       type: String,
