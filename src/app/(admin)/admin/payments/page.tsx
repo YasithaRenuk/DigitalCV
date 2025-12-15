@@ -156,7 +156,7 @@ export default function PaymentsPage() {
 
   // Format amount
   const formatAmount = (amount: number, currency: string) => {
-    return `${currency} ${amount.toFixed(2)}`;
+    return `${currency} ${(amount/100).toFixed(2)}`;
   };
 
   return (
