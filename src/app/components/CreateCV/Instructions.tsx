@@ -15,7 +15,7 @@ export default function Instructions() {
         <div className="flex items-start">
           <span className="w-2 h-2 bg-secondary rounded-full mt-1 mr-2"></span>
           <div>
-            <p>Create a unique username to show your professionalism, and set a 4-digit PIN that is easy to share and remember.</p>
+            <p><b>Create a unique username</b> to show your professionalism, and set a <b> lest 4-digit PIN </b> that is easy to share and remember.</p>
             <p className="mt-0.5 text-gray-600">
               Do not use simple PINs like 1234 or 4321.
             </p>
@@ -26,9 +26,9 @@ export default function Instructions() {
         <div className="flex items-start">
           <span className="w-2 h-2 bg-secondary rounded-full mt-1 mr-2"></span>
           <div>
-            <p>Upload your previous resume in the “Upload your CV here” section.</p>
+            <p><b>Upload your previous resume </b> in the “Upload your CV here” section.</p>
             <p className="mt-0.5 text-gray-600">
-              (Handwritten CV or any type of resume is accepted.)
+              ( Handwritten CV or any type of resume is accepted. )
             </p>
           </div>
         </div>
@@ -36,14 +36,14 @@ export default function Instructions() {
         {/* 3 */}
         <div className="flex items-start">
           <span className="w-2 h-2 bg-secondary rounded-full mt-1 mr-2"></span>
-          <p>Wait until your DigitalCV is generated, and make sure to check all details carefully.</p>
+          <p>Wait until your DigitalCV is generated, and make sure to <b> check all details carefully.</b></p>
         </div>
 
         {/* 4 */}
         <div className="flex items-start">
           <span className="w-2 h-2 bg-secondary rounded-full mt-1 mr-2"></span>
           <div>
-            <p>Make the payment and wait for confirmation. You can then access your DigitalCV anytime, anywhere.</p>
+            <p><b>Make the payment </b> and wait for confirmation. You can then access your DigitalCV anytime, anywhere.</p>
           </div>
         </div>
 

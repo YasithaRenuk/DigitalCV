@@ -220,7 +220,7 @@ export default function UploadCV() {
       )}
 
       <p className="text-xs text-center mb-4 bg-[#F1752F]/10 p-2 rounded-full">
-        Keep your username & PIN safe — required for recruiters to access your CV.
+        Keep your username & PIN safe, required for recruiters to access your CV.
       </p>
 
       {/* Create Button */}
