@@ -24,7 +24,7 @@ export async function getAdminStats() {
             }
         });
 
-        const monthlyEarnings = payments.reduce((acc, payment) => acc + (payment.amount || 0), 0);
+        const monthlyEarnings = payments.reduce((acc, payment) => acc + (payment.amount/100 || 0), 0);
 
         // 3. Prepare Chart Data (Daily earnings for the month)
         // Initialize an array representing days of the month with 0 earnings
@@ -38,7 +38,7 @@ export async function getAdminStats() {
         payments.forEach(payment => {
             const day = new Date(payment.createdAt).getDate();
             const currentAmount = chartDataMap.get(day) || 0;
-            chartDataMap.set(day, currentAmount + (payment.amount || 0));
+            chartDataMap.set(day, currentAmount + (payment.amount/100 || 0));
         });
 
         const earningsChartData = Array.from(chartDataMap.entries()).map(([day, amount]) => ({

@@ -6,7 +6,7 @@ export default async function AdminPage() {
   const stats = await getAdminStats();
 
   return (
-    <div className="p-8">
+    <div className="pl-8 pr-8">
       <AdminDashboard stats={stats} />
     </div>
   )
