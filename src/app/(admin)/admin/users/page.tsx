@@ -133,9 +133,9 @@ export default function UsersPage() {
   const getRoleColor = (role: string) => {
     switch (role) {
       case "admin":
-        return "bg-purple-500 text-white";
+        return "bg-secondary text-white";
       case "user":
-        return "bg-blue-500 text-white";
+        return "bg-primary text-white";
       default:
         return "bg-gray-500 text-white";
     }
@@ -288,12 +288,12 @@ export default function UsersPage() {
                           <SelectContent>
                             <SelectItem value="user">
                               <span className="flex items-center gap-2">
-                                <Badge className="bg-blue-500 text-white">user</Badge>
+                                <Badge className="bg-primary text-white">user</Badge>
                               </span>
                             </SelectItem>
                             <SelectItem value="admin">
                               <span className="flex items-center gap-2">
-                                <Badge className="bg-purple-500 text-white">admin</Badge>
+                                <Badge className="bg-secondary text-white">admin</Badge>
                               </span>
                             </SelectItem>
                           </SelectContent>
