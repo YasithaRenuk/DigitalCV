@@ -37,7 +37,7 @@ const items = [
     icon: Users,
   },
   {
-    title: "CV's",
+    title: "CVs",
     url: "/admin/usercv",
     icon: FileText,
   },
@@ -58,7 +58,9 @@ export function AppSidebar() {
           <SidebarGroup>
             <SidebarGroupContent className="flex flex-col items-center pt-8">
               {/* Avatar */}
+              <a href="/">
               <div className="w-24 h-24 rounded-full bg-[#EFD470] mb-10" />
+              </a>
 
               {/* Nav items */}
               <SidebarMenu className="flex flex-col gap-6">

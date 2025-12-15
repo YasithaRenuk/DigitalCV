@@ -33,12 +33,13 @@ export default function InquiryForm({ reasonTopic = "" }: InquiryFormProps) {
   const [submitError, setSubmitError] = useState<string>("");
 
   const topics = [
-    "Report an issue on Your CV",
-    "Change username and PIN",
+    "Report an Issue on Your CV",
+    "Change Username and PIN",
     "Account Support",
-    "Extend membership",
+    "Extend Membership",
     "Feature Request",
     "Feedback",
+    "Other"
   ];
 
   // Prefill user's first name
