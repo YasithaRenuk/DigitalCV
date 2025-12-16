@@ -13,7 +13,7 @@ const montserrat = Montserrat({
 export const metadata: Metadata = {
   title: "DigitalCV – Create a Professional ATS-Friendly CV Online",
   description: "Build and store your ATS-friendly CV with DigitalCV. Easy online CV maker for job seekers in Sri Lanka and beyond.",
-  keywords:["CV",'ATS CV','Digital CV','online CV maker','create CV Sri Lanka','professional CV','resume builder','job CV online'],
+  keywords:["CV",'ATS CV','Digital CV','online CV maker','create CV Sri Lanka','professional CV','resume builder','job CV online','ai cv generator','cv template',' ai cv','ai cv creator'],
   metadataBase: new URL("https://digitalcv.lk/"),
   applicationName: "DigitalCV",
   openGraph:{
