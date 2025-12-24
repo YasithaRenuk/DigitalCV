@@ -1,18 +1,55 @@
-name: Docker Image CI
+# name: Docker Image CI
+
+# on:
+#   push:
+#     branches: [ "main" ]
+#   pull_request:
+#     branches: [ "main" ]
+
+# jobs:
+
+#   build:
+
+#     runs-on: ubuntu-latest
+
+#     steps:
+#     - uses: actions/checkout@v4
+#     - name: Build the Docker image
+#       run: docker build . --file Dockerfile --tag digital-cv-prod:$(date +%s)
+name: build and push
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
-
-  build:
-
+  build-and-push:
     runs-on: ubuntu-latest
 
+    env:
+      REGISTRY: ghcr.io
+      IMAGE: ghcr.io/yasitharenuk/digitalcv-prod
+
+      TIMESTAMP: ${{ github.run_number }}-${{ github.sha }}
+
+    permissions:
+      contents: read
+      packages: write
+
     steps:
-    - uses: actions/checkout@v4
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag digital-cv-prod:$(date +%s)
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_PAT }}
+
+      - name: Build and push image
+        run: |
+          docker build -t ${{ env.IMAGE }}:${{ env.TIMESTAMP }} -t ${{ env.IMAGE }}:latest .
+          docker push ${{ env.IMAGE }}:${{ env.TIMESTAMP }}
+          docker push ${{ env.IMAGE }}:latest
