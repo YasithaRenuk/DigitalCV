@@ -29,7 +29,7 @@ jobs:
 
     env:
       REGISTRY: ghcr.io
-      IMAGE: ghcr.io/yasitharenuk/digitalcv-prod
+      IMAGE: ghcr.io/yashu-x/digitalcv-prod
 
       TIMESTAMP: ${{ github.run_number }}-${{ github.sha }}
 
