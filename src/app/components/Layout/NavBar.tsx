@@ -6,6 +6,7 @@ import { useSession, signIn, signOut } from "next-auth/react";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import logo from "../../../../public/DigitalCVlogoThatICrop.png"
 
 export default function Navbar() {
   const { data: session, status } = useSession();
@@ -33,10 +34,10 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
         {/* Logo */}
         <a href="/">
-          <div className="flex items-center space-x-2">
-            {/* <Image src="/logo.png" alt="DigitalCV Logo" width={40} height={40} /> */}
-            <span className="text-xl font-bold">DigitalCV</span>
-          </div>
+          {/* <div className="flex items-center space-x-2"> */}
+            <Image src={logo} alt="DigitalCV Logo" width={100} height={100} />
+            {/* <span className="text-xl font-bold">DigitalCV</span> */}
+          {/* </div> */}
         </a>
 
         {/* Desktop Menu */}
