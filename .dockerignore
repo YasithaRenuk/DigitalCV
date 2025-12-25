@@ -16,3 +16,6 @@ README.md
 *.log
 .vscode
 npm-debug.log*
+
+#remove Docs
+*.md
