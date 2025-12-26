@@ -42,7 +42,7 @@ export async function sendProcessCompletedEmail({
             <tr>
               <td align="center" style="padding:25px; background:#0f172a;">
                 <img 
-                  src="https://your-domain.com/DigitalCVlogoThatICrop.png"
+                  src="https://digitalcv.lk/DigitalCVlogoThatICrop.png"
                   alt="DigitalCV Logo"
                   style="max-width:160px;"
                 />
