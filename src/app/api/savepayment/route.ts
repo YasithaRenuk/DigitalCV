@@ -58,7 +58,7 @@ export async function POST( request: NextRequest) {
 
       console.log("Updated UserCV:", updatedCv);
 
-      if (normalizedState === "confirmed") {
+      if (normalizedState === "cancelled") {
         if(updatedCv != null){
           
           const user = await User.findById(updatedCv.userId);
