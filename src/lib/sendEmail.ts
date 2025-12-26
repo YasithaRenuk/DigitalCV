@@ -36,7 +36,7 @@ export async function sendProcessCompletedEmail({
     <table width="100%" cellpadding="0" cellspacing="0">
       <tr>
         <td align="center" style="padding:30px 15px;">
-          <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff; border-radius:8px; overflow:hidden; box-shadow:0 4px 10px rgba(0,0,0,0.05);">
+          <table width="600" cellpadding="0" cellspacing="0" style="background:#000000; border-radius:8px; overflow:hidden; box-shadow:0 4px 10px rgba(0,0,0,0.05);">
             
             <!-- Header -->
             <tr>
@@ -76,10 +76,6 @@ export async function sendProcessCompletedEmail({
                     <td>${password}</td>
                   </tr>
                 </table>
-
-                <p>
-                  For security reasons, we strongly recommend changing your password after your first login.
-                </p>
 
                 <p>
                   If you have any questions or need support, feel free to reply to this email.
