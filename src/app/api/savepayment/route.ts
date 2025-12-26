@@ -39,7 +39,7 @@ export async function POST( request: NextRequest) {
     
     if (normalizedState === "confirmed") {
       cvStatus = "active";
-    } else if (normalizedState === "failed" || normalizedState === "faild") {
+    } else if (normalizedState === "failed" || normalizedState === "cancelled") {
       cvStatus = "deactive";
     }
 
