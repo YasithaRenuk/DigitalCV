@@ -3,6 +3,7 @@ import connectDB from "@/lib/mongodb";
 import User from "@/models/User";
 import UserCV from "@/models/UserCV";
 import Payment from "@/models/Payment";
+import { sendProcessCompletedEmail } from "@/lib/sendEmail";
 
 export async function POST( request: NextRequest) {
   try {
@@ -56,6 +57,24 @@ export async function POST( request: NextRequest) {
       );
 
       console.log("Updated UserCV:", updatedCv);
+
+      if (normalizedState === "confirmed") {
+        if(updatedCv != null){
+          
+          const user = await User.findById(updatedCv.userId);
+
+          if(user != null){
+            await sendProcessCompletedEmail({
+              to: user.email,
+              username: updatedCv.username,
+              password: updatedCv.password,
+              processName: "CV Generation",
+    
+            });
+          }
+          
+        }
+      }
 
       if (!updatedCv) {
         console.log("No UserCV found with id:", payment.CVID);
