@@ -67,9 +67,7 @@ export async function POST( request: NextRequest) {
             await sendProcessCompletedEmail({
               to: user.email,
               username: updatedCv.username,
-              password: updatedCv.password,
-              processName: "CV Generation",
-    
+              password: updatedCv.password,    
             });
           }
           
