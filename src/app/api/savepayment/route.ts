@@ -58,7 +58,7 @@ export async function POST( request: NextRequest) {
 
       console.log("Updated UserCV:", updatedCv);
 
-      if (normalizedState === "cancelled") {
+      if (normalizedState === "confirmed") {
         if(updatedCv != null){
           
           const user = await User.findById(updatedCv.userId);
@@ -67,9 +67,7 @@ export async function POST( request: NextRequest) {
             await sendProcessCompletedEmail({
               to: user.email,
               username: updatedCv.username,
-              password: updatedCv.password,
-              processName: "CV Generation",
-    
+              password: updatedCv.password,    
             });
           }
           
