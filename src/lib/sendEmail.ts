@@ -37,11 +37,11 @@ export async function sendProcessCompletedEmail({
     <table width="100%" cellpadding="0" cellspacing="0">
       <tr>
         <td align="center" style="padding:30px 15px;">
-          <table width="600" cellpadding="0" cellspacing="0" style="background:#000000; border-radius:8px; overflow:hidden; box-shadow:0 4px 10px rgba(0,0,0,0.05);">
+          <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff; border-radius:8px; overflow:hidden; box-shadow:0 4px 10px rgba(0,0,0,0.05);">
             
             <!-- Header -->
             <tr>
-              <td align="center" style="padding:25px; background:#0f172a;">
+              <td align="center" style="padding:25px; background:#ffffff;">
                 <img 
                   src="https://digitalcv.lk/DigitalCVlogoThatICrop.png"
                   alt="DigitalCV Logo"
