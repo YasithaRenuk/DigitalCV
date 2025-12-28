@@ -24,7 +24,7 @@ export async function sendProcessCompletedEmail({
     },
   });
 
-  const subject = "";
+  const subject = "DigitalCV has been successfully created and securely stored in our system";
 
   const html = `
 <!DOCTYPE html>
@@ -105,10 +105,10 @@ export async function sendProcessCompletedEmail({
 `;
 
   await transporter.sendMail({
-    from: `"DigitalCV Support" <support@digitalcv.lk>`,
+    from: `"DigitalCV Support" <noreply@digitalcv.lk>`,
     to,
     subject,
     html,
-    replyTo: "support@digitalcv.lk",
+    replyTo: "noreply@digitalcv.lk",
   });
 }
