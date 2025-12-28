@@ -1,5 +1,6 @@
 "use server";
 
+import { serverEnv } from "@/config/server-env";
 import nodemailer from "nodemailer";
 
 type SendEmailParams = {
@@ -14,16 +15,16 @@ export async function sendProcessCompletedEmail({
   password,
 }: SendEmailParams) {
   const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: Number(process.env.SMTP_PORT),
-    secure: process.env.SMTP_SECURE === "true",
+    host: serverEnv.smtpHost,
+    port: Number(serverEnv.smtpPort),
+    secure: serverEnv.smtpSecure === "true",
     auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
+      user: serverEnv.smtpUser,
+      pass: serverEnv.smtpPass,
     },
   });
 
-  const subject = "";
+  const subject = "DigitalCV has been successfully created and securely stored in our system";
 
   const html = `
 <!DOCTYPE html>
@@ -104,10 +105,10 @@ export async function sendProcessCompletedEmail({
 `;
 
   await transporter.sendMail({
-    from: `"DigitalCV Support" <support@digitalcv.lk>`,
+    from: `"DigitalCV Support" <noreply@digitalcv.lk>`,
     to,
     subject,
     html,
-    replyTo: "support@digitalcv.lk",
+    replyTo: "noreply@digitalcv.lk",
   });
 }
