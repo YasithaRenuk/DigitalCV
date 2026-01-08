@@ -22,8 +22,31 @@ export async function POST(request: NextRequest) {
 
     // Parse form data
     const formData = await request.formData();
+    
     const username = formData.get('username') as string;
+    const usernameRegex = /^[a-z0-9!@#$%^&*()_+=\-{}[\]:;"'<>,.?/\\|~`]+$/;
+
+    if (!usernameRegex.test(username)) {
+      return NextResponse.json(
+        {
+          error:
+            'Invalid username. Username must be lowercase, contain no spaces, and may include numbers or special characters.',
+        },
+        { status: 409 }
+      );
+    }
+
     const password = formData.get('password') as string;
+    const passwordRegex = /^\d{4}$/;
+
+    if (!passwordRegex.test(password)) {
+      return NextResponse.json(
+        {
+          error: 'Invalid password. Password must be exactly 4 digits.',
+        },
+        { status: 409 }
+      );
+    }
     const cvFiles = formData.getAll('cvFiles') as File[];
     const targetUserId = formData.get('userId') as string; // Optional: for admin use
 
