@@ -3,7 +3,7 @@
 import { useState, ChangeEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Eye, EyeClosed, AlertCircle, X, CheckCircle2 } from "lucide-react";
+import { Eye, EyeClosed, AlertCircle } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -16,9 +16,21 @@ export default function UploadCV() {
   const { data: session } = useSession();
   const router = useRouter();
 
-  const [errors, setErrors] = useState<{ username?: string; pin?: string; cv?: string }>({});
+  const [errors, setErrors] = useState<{
+    username?: string;
+    pin?: string;
+    cv?: string;
+  }>({});
   const [backendError, setBackendError] = useState<string>("");
   const [successMessage, setSuccessMessage] = useState<string>("");
+
+  // Username: lowercase only, no spaces, numbers & special chars allowed
+  // (Disallows whitespace and uppercase letters)
+  const usernameRegex =
+    /^[a-z0-9!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]+$/;
+
+  // PIN: exactly 4 digits
+  const pinRegex = /^\d{4}$/;
 
   const handleUpload = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -36,15 +48,34 @@ export default function UploadCV() {
     // Clear previous messages
     setBackendError("");
     setSuccessMessage("");
-    
+
     const newErrors: typeof errors = {};
-    if (!username.trim()) newErrors.username = "Username is required";
-    if (!pin.trim()) newErrors.pin = "PIN is required";
-    if (cvFiles.length === 0) newErrors.cv = "Please upload at least one file";
+
+    // ---- CLIENT VALIDATION ----
+    const usernameValue = username;
+    const pinValue = pin;
+
+    // Required checks
+    if (!usernameValue.trim()) {
+      newErrors.username = "Username is required";
+    } else if (!usernameRegex.test(usernameValue)) {
+      newErrors.username =
+        "Username must be lowercase, contain no spaces, and may include numbers/special characters.";
+    }
+
+    if (!pinValue.trim()) {
+      newErrors.pin = "PIN is required";
+    } else if (!pinRegex.test(pinValue)) {
+      newErrors.pin = "PIN must be exactly 4 digits.";
+    }
+
+    if (cvFiles.length === 0) {
+      newErrors.cv = "Please upload at least one file";
+    }
 
     setErrors(newErrors);
-
     if (Object.keys(newErrors).length > 0) return;
+    // ---- END VALIDATION ----
 
     if (!session || !session.user) {
       setBackendError("Please log in to create a CV");
@@ -55,12 +86,10 @@ export default function UploadCV() {
     setIsLoading(true);
 
     try {
-      // Create FormData to send username, password, and files
       const formData = new FormData();
-      formData.append("username", username);
-      formData.append("password", pin);
-      
-      // Append all CV files (accepted but not processed as per requirements)
+      formData.append("username", usernameValue);
+      formData.append("password", pinValue);
+
       cvFiles.forEach((file) => {
         formData.append("cvFiles", file);
       });
@@ -81,11 +110,13 @@ export default function UploadCV() {
             ...prev,
             username: errorMessage,
           }));
-          return; // stop here
+          return;
         }
 
         if (response.status === 401 || response.status === 403) {
-          setBackendError("You are not authorized to perform this action. Please log in again.");
+          setBackendError(
+            "You are not authorized to perform this action. Please log in again."
+          );
           setTimeout(() => router.push("/loginpage"), 2000);
           return;
         }
@@ -93,19 +124,20 @@ export default function UploadCV() {
         setBackendError(errorMessage);
         return;
       }
-      
+
       setUsername("");
       setPin("");
       setCvFiles([]);
       setErrors({});
-      
+
       router.push(`/showcv?id=${data.userCV.id}`);
-      
     } catch (error: unknown) {
       console.error("Error creating UserCV:", error);
-      // Error already handled above, just ensure backend error is set
       if (!backendError && !errors.username) {
-        const errorMessage = error instanceof Error ? error.message : "Failed to create CV. Please try again.";
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : "Failed to create CV. Please try again.";
         setBackendError(errorMessage);
       }
     } finally {
@@ -115,7 +147,17 @@ export default function UploadCV() {
 
   return (
     <div className="max-w-md mx-auto p-6 bg-white">
-      <h2 className="text-2xl font-semibold text-center mb-6">Upload Your CV</h2>
+      <h2 className="text-2xl font-semibold text-center mb-6">
+        Upload Your CV
+      </h2>
+
+      {/* Backend error */}
+      {backendError && (
+        <div className="flex items-center gap-2 mb-4 p-3 rounded border border-red-300 bg-red-50">
+          <AlertCircle className="w-5 h-5 text-red-500" />
+          <p className="text-sm text-red-600">{backendError}</p>
+        </div>
+      )}
 
       {/* Username */}
       <div className="mb-4">
@@ -124,11 +166,15 @@ export default function UploadCV() {
           placeholder="Enter username"
           value={username}
           onChange={(e) => {
-            setUsername(e.target.value);
+            // Optional: enforce rules while typing
+            const v = e.target.value.toLowerCase().replace(/\s+/g, "");
+            setUsername(v);
             setErrors((prev) => ({ ...prev, username: undefined }));
             setBackendError("");
           }}
-          className={`border-orange-300 ${errors.username ? "border-red-500 bg-red-50" : ""}`}
+          className={`border-orange-300 ${
+            errors.username ? "border-red-500 bg-red-50" : ""
+          }`}
         />
         {errors.username && (
           <div className="flex items-center gap-1 mt-1.5">
@@ -146,11 +192,15 @@ export default function UploadCV() {
             placeholder="Enter PIN"
             value={pin}
             onChange={(e) => {
-              setPin(e.target.value);
+              // Optional: enforce digits only + max length 4
+              const v = e.target.value.replace(/\D/g, "").slice(0, 4);
+              setPin(v);
               setErrors((prev) => ({ ...prev, pin: undefined }));
               setBackendError("");
             }}
-            className={`pr-10 border-orange-300 ${errors.pin ? "border-red-500 bg-red-50" : ""}`}
+            className={`pr-10 border-orange-300 ${
+              errors.pin ? "border-red-500 bg-red-50" : ""
+            }`}
           />
 
           <span
@@ -169,7 +219,6 @@ export default function UploadCV() {
         )}
       </div>
 
-
       {/* File Upload */}
       <label
         className={`block border rounded-lg p-6 text-center cursor-pointer mb-4 ${
@@ -184,7 +233,11 @@ export default function UploadCV() {
           onChange={handleUpload}
         />
         <div className="flex flex-col items-center justify-center">
-          <img src="/UploadtoCloud.png" alt="Upload Icon" className="w-10 h-10 mb-2" />
+          <img
+            src="/UploadtoCloud.png"
+            alt="Upload Icon"
+            className="w-10 h-10 mb-2"
+          />
           <span className="text-gray-600">Upload Your CV here</span>
         </div>
         <p className="text-xs text-gray-400 mt-2">
@@ -224,9 +277,9 @@ export default function UploadCV() {
       </p>
 
       {/* Create Button */}
-      <Button 
-        onClick={handleCreate} 
-        className="w-full  text-white hover:bg-white hover:text-secondary hover:border-secondary hover:border-2" 
+      <Button
+        onClick={handleCreate}
+        className="w-full text-white hover:bg-white hover:text-secondary hover:border-secondary hover:border-2"
         variant="secondary"
         disabled={isLoading}
       >

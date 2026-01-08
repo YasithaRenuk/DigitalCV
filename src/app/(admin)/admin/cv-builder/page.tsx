@@ -16,7 +16,7 @@ import {
   FileText,
 } from "lucide-react";
 import { Label } from "@/components/ui/label";
-import { ScrollArea } from "@/components/ui/scroll-area"; // Check if this import is correct based on project structure
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Card,
   CardContent,
@@ -37,7 +37,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useRouter } from "next/navigation";
-import CvTemplate, { CVData } from "@/app/components/ShowCV/CvTemplate"; // Import CvTemplate and type
+import CvTemplate, { CVData } from "@/app/components/ShowCV/CvTemplate";
 
 export default function CVBuilderPage() {
   const router = useRouter();
@@ -45,20 +45,29 @@ export default function CVBuilderPage() {
   const [usersList, setUsersList] = useState<any[]>([]);
   const [userSearchTerm, setUserSearchTerm] = useState("");
   const [selectedUserForCV, setSelectedUserForCV] = useState<any | null>(null);
+
   const [newCVFormData, setNewCVFormData] = useState({
     username: "",
     pin: "",
     files: [] as File[],
   });
+
   const [isCreatingCV, setIsCreatingCV] = useState(false);
   const [createCVError, setCreateCVError] = useState<string | null>(null);
+
   const [createdCVResult, setCreatedCVResult] = useState<{
     id: string;
     link: string;
   } | null>(null);
-  const [previewData, setPreviewData] = useState<CVData | null>(null); // State for preview data
+
+  const [previewData, setPreviewData] = useState<CVData | null>(null);
   const [retryDialogOpen, setRetryDialogOpen] = useState(false);
   const [isDeletingCV, setIsDeletingCV] = useState(false);
+
+  // ✅ Same validation rules as backend
+  const usernameRegex =
+    /^[a-z0-9!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]+$/; // no spaces, no uppercase
+  const pinRegex = /^\d{4}$/; // exactly 4 digits
 
   // Fetch Users for selection
   useEffect(() => {
@@ -76,8 +85,37 @@ export default function CVBuilderPage() {
     fetchUsers();
   }, []);
 
+  const validateUsernameAndPin = () => {
+    const u = newCVFormData.username;
+    const p = newCVFormData.pin;
+
+    if (!u.trim()) return "Username is required.";
+    if (!usernameRegex.test(u))
+      return "Invalid username. Use only lowercase, no spaces, numbers/special characters allowed.";
+
+    if (!p.trim()) return "PIN is required.";
+    if (!pinRegex.test(p)) return "PIN must be exactly 4 digits.";
+
+    return null;
+  };
+
   const handleCreateCV = async () => {
-    if (newCVFormData.files.length === 0) return;
+    // ✅ Validate before creating
+    const validationError = validateUsernameAndPin();
+    if (validationError) {
+      setCreateCVError(validationError);
+      return;
+    }
+
+    if (newCVFormData.files.length === 0) {
+      setCreateCVError("Please upload at least one file.");
+      return;
+    }
+
+    if (!selectedUserForCV?.id) {
+      setCreateCVError("Please select a user first.");
+      return;
+    }
 
     setIsCreatingCV(true);
     setCreateCVError(null);
@@ -144,13 +182,12 @@ export default function CVBuilderPage() {
       });
 
       if (delRes.ok) {
-        // Reset to Step 3 (Upload), keeping Step 1 & 2 data
         setCreatedCVResult(null);
         setPreviewData(null);
         setNewCVFormData((prev) => ({
           ...prev,
           files: [],
-        })); // Clear files
+        }));
         setCreateStep(3);
         setRetryDialogOpen(false);
       } else {
@@ -166,11 +203,11 @@ export default function CVBuilderPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[90vh] pl-8 pr-8">
-      <div className="w-full  mb-6 flex items-center">
+      <div className="w-full mb-6 flex items-center">
         <h1 className="text-3xl font-bold text-gray-800">CV Builder</h1>
       </div>
 
-      <div className="flex w-full  gap-8">
+      <div className="flex w-full gap-8">
         {/* Steps Sidebar */}
         <div className="w-64 flex-shrink-0 hidden md:block">
           <div className="bg-white rounded-xl shadow-sm border p-6 space-y-6">
@@ -233,6 +270,7 @@ export default function CVBuilderPage() {
                 : "CV Created Successfully!"}
             </CardDescription>
           </CardHeader>
+
           <CardContent className="p-8 min-h-[400px]">
             {createCVError && (
               <div className="bg-red-50 text-red-600 p-4 rounded-md mb-6 text-sm flex items-center">
@@ -255,6 +293,7 @@ export default function CVBuilderPage() {
                     className="pl-10 py-6 text-lg"
                   />
                 </div>
+
                 <ScrollArea className="h-[300px] border rounded-md p-2">
                   {usersList
                     .filter(
@@ -319,12 +358,15 @@ export default function CVBuilderPage() {
                   <Label className="text-base">CV Username</Label>
                   <Input
                     value={newCVFormData.username}
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      // ✅ enforce lowercase + remove spaces while typing
+                      const v = e.target.value.toLowerCase().replace(/\s+/g, "");
                       setNewCVFormData({
                         ...newCVFormData,
-                        username: e.target.value,
-                      })
-                    }
+                        username: v,
+                      });
+                      setCreateCVError(null);
+                    }}
                     placeholder="Unique username for CV"
                     className="py-6"
                   />
@@ -337,13 +379,16 @@ export default function CVBuilderPage() {
                   <Label className="text-base">CV PIN</Label>
                   <Input
                     value={newCVFormData.pin}
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      // ✅ digits only + max length 4
+                      const v = e.target.value.replace(/\D/g, "").slice(0, 4);
                       setNewCVFormData({
                         ...newCVFormData,
-                        pin: e.target.value,
-                      })
-                    }
-                    placeholder="Secret PIN"
+                        pin: v,
+                      });
+                      setCreateCVError(null);
+                    }}
+                    placeholder="4-digit PIN"
                     className="py-6"
                   />
                   <p className="text-sm text-muted-foreground">
@@ -370,6 +415,7 @@ export default function CVBuilderPage() {
                             ...Array.from(e.target.files || []),
                           ],
                         }));
+                        setCreateCVError(null);
                       }
                     }}
                   />
@@ -430,20 +476,23 @@ export default function CVBuilderPage() {
             {createStep === 4 && createdCVResult && (
               <div className="flex">
                 <div>
-                    {/* CV PREVIEW SECTION */}
-                        {previewData && (
-                            <div className="w-full mr-8 pr-8">
-                                <h4 className="text-xl font-semibold mb-4 text-center">CV Preview</h4>
-                                <ScrollArea className="h-[600px] w-full border-2 border-primary rounded-lg p-4 bg-white shadow-md mx-auto max-w-4xl">
-                                    <CvTemplate data={previewData} />
-                                </ScrollArea>
-                            </div>
-                        )}
-                </div> 
+                  {previewData && (
+                    <div className="w-full mr-8 pr-8">
+                      <h4 className="text-xl font-semibold mb-4 text-center">
+                        CV Preview
+                      </h4>
+                      <ScrollArea className="h-[600px] w-full border-2 border-primary rounded-lg p-4 bg-white shadow-md mx-auto max-w-4xl">
+                        <CvTemplate data={previewData} />
+                      </ScrollArea>
+                    </div>
+                  )}
+                </div>
+
                 <div className="flex flex-col items-center justify-center space-y-8 py-10">
                   <div className="h-24 w-24 bg-green-100 rounded-full flex items-center justify-center text-green-600 animate-bounce">
                     <Check size={48} />
                   </div>
+
                   <div className="text-center space-y-2">
                     <h3 className="text-3xl font-bold text-gray-900">
                       CV Created Successfully!
@@ -468,7 +517,6 @@ export default function CVBuilderPage() {
                         size="lg"
                         onClick={() => {
                           navigator.clipboard.writeText(createdCVResult.link);
-                          // Use toast here if available
                           alert("Link copied to clipboard!");
                         }}
                       >
@@ -488,28 +536,35 @@ export default function CVBuilderPage() {
                       </Button>
                     </a>
 
-                    {/* Try Again Button */}
-                    <AlertDialog open={retryDialogOpen} onOpenChange={setRetryDialogOpen}>
+                    <AlertDialog
+                      open={retryDialogOpen}
+                      onOpenChange={setRetryDialogOpen}
+                    >
                       <AlertDialogTrigger asChild>
-                        <Button
-                          variant="destructive"
-                          size="lg"
-                        >
-                          <ArrowLeft size={18} className="mr-2" /> Try Again (Delete
-                          & Re-upload)
+                        <Button variant="destructive" size="lg">
+                          <ArrowLeft size={18} className="mr-2" /> Try Again
+                          (Delete & Re-upload)
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
                           <AlertDialogTitle>Delete this CV?</AlertDialogTitle>
                           <AlertDialogDescription>
-                            This will delete the generated CV and let you upload new files. This action cannot be undone.
+                            This will delete the generated CV and let you upload
+                            new files. This action cannot be undone.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel disabled={isDeletingCV}>Cancel</AlertDialogCancel>
-                          <AlertDialogAction onClick={handleRetryDelete} disabled={isDeletingCV}>
-                            {isDeletingCV ? "Deleting..." : "Delete & Re-upload"}
+                          <AlertDialogCancel disabled={isDeletingCV}>
+                            Cancel
+                          </AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={handleRetryDelete}
+                            disabled={isDeletingCV}
+                          >
+                            {isDeletingCV
+                              ? "Deleting..."
+                              : "Delete & Re-upload"}
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
@@ -537,6 +592,7 @@ export default function CVBuilderPage() {
               >
                 Cancel
               </Button>
+
               <div className="flex gap-3">
                 {createStep > 1 && (
                   <Button
@@ -550,8 +606,15 @@ export default function CVBuilderPage() {
 
                 {createStep === 1 && (
                   <Button
-                    onClick={() => setCreateStep(2)}
-                    disabled={!selectedUserForCV}
+                    onClick={() => {
+                      setCreateCVError(null);
+                      if (!selectedUserForCV) {
+                        setCreateCVError("Please select a user first.");
+                        return;
+                      }
+                      setCreateStep(2);
+                    }}
+                    disabled={isCreatingCV}
                   >
                     Next Step
                   </Button>
@@ -559,8 +622,16 @@ export default function CVBuilderPage() {
 
                 {createStep === 2 && (
                   <Button
-                    onClick={() => setCreateStep(3)}
-                    disabled={!newCVFormData.username || !newCVFormData.pin}
+                    onClick={() => {
+                      setCreateCVError(null);
+                      const validationError = validateUsernameAndPin();
+                      if (validationError) {
+                        setCreateCVError(validationError);
+                        return;
+                      }
+                      setCreateStep(3);
+                    }}
+                    disabled={isCreatingCV}
                   >
                     Next Step
                   </Button>
