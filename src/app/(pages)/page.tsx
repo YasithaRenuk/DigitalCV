@@ -6,6 +6,7 @@ import Hero from "../components/HomePage/Hero";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import StatsCards from "../components/HomePage/StatsCards";
+import CreateDigitalCV from "../components/HomePage/CreateDigitalCV";
 
 
 export default function Home() {
@@ -24,14 +25,7 @@ export default function Home() {
       <Hero/>
       <StatsCards/>
       <FeatureSection/>
-      <div className="w-full flex justify-center">
-        <div className="shadow-2xl w-[1183px] h-[383px] m-10 bg-white rounded-lg justify-center flex">
-          <Button className="mt-64" onClick={onClickCreate}>
-            Create Your DigitalCV Now !
-          </Button>
-        </div>
-      </div>
-
+      <CreateDigitalCV/>
     </div>
   );
 }
