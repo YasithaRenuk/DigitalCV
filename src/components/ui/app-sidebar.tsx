@@ -21,6 +21,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import Link from "next/link";
 
 const items = [
   { title: "Home", url: "/admin", icon: Home },
@@ -46,17 +47,19 @@ export function AppSidebar() {
 
               {/* Profile Header */}
               <div className="flex flex-col items-center text-center">
-                <div className="w-24 h-24 rounded-full bg-orange-200 flex items-center justify-center text-3xl overflow-hidden">
-                  {session?.user?.image ? (
-                    <img
-                      src={session.user.image}
-                      alt={session?.user.name? session?.user.name : " "}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    "😺"
-                  )}
-                </div>
+                <Link href="/">
+                  <div className="w-24 h-24 rounded-full bg-orange-200 flex items-center justify-center text-3xl overflow-hidden">
+                    {session?.user?.image ? (
+                      <img
+                        src={session.user.image}
+                        alt={session?.user.name? session?.user.name : " "}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      "😺"
+                    )}
+                  </div>
+                </Link>
                 <h2 className="font-semibold text-lg mt-2">
                   {session?.user.name}
                 </h2>
