@@ -1,8 +1,15 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Home, Inbox, Users, FileText, LogOut,BadgeDollarSign  } from "lucide-react";
-import { signOut } from "next-auth/react";
+import {
+  Home,
+  Inbox,
+  Users,
+  FileText,
+  LogOut,
+  BadgeDollarSign,
+} from "lucide-react";
+import { signOut,useSession } from "next-auth/react";
 
 import {
   Sidebar,
@@ -16,122 +23,92 @@ import {
 } from "@/components/ui/sidebar";
 
 const items = [
-  {
-    title: "Home",
-    url: "/admin",
-    icon: Home,
-  },
-  {
-    title: "CV Builder",
-    url: "/admin/cv-builder",
-    icon: FileText,
-  },
-  {
-    title: "Inbox",
-    url: "/admin/inbox",
-    icon: Inbox,
-  },
-  {
-    title: "Users",
-    url: "/admin/users",
-    icon: Users,
-  },
-  {
-    title: "CVs",
-    url: "/admin/usercv",
-    icon: FileText,
-  },
-  {
-    title: "Payments",
-    url: "/admin/payments",
-    icon: BadgeDollarSign,
-  },
+  { title: "Home", url: "/admin", icon: Home },
+  { title: "CV Builder", url: "/admin/cv-builder", icon: FileText },
+  { title: "Inbox", url: "/admin/inbox", icon: Inbox },
+  { title: "Users", url: "/admin/users", icon: Users },
+  { title: "CVs", url: "/admin/usercv", icon: FileText },
+  { title: "Payments", url: "/admin/payments", icon: BadgeDollarSign },
 ];
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const { data: session, status } = useSession();
 
   return (
-    <Sidebar className="h-screen">
+    <Sidebar className="h-screen bg-[#F5F6F7] border-r w-[260px]">
       <SidebarContent className="flex flex-col justify-between h-full">
+
+        {/* TOP */}
         <div>
           <SidebarGroup>
-            <SidebarGroupContent className="flex flex-col items-center pt-8">
-              {/* Avatar */}
-              <a href="/">
-              <div className="w-24 h-24 rounded-full bg-[#EFD470] mb-10" />
-              </a>
+            <SidebarGroupContent className="flex flex-col items-center pt-8 pb-6">
 
-              {/* Nav items */}
-              <SidebarMenu className="flex flex-col gap-6">
+              {/* Profile Header */}
+              <div className="flex flex-col items-center text-center">
+                <div className="w-24 h-24 rounded-full bg-orange-200 flex items-center justify-center text-3xl overflow-hidden">
+                  {session?.user?.image ? (
+                    <img
+                      src={session.user.image}
+                      alt={session?.user.name? session?.user.name : " "}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    "😺"
+                  )}
+                </div>
+                <h2 className="font-semibold text-lg mt-2">
+                  {session?.user.name}
+                </h2>
+                <p className="text-sm text-gray-500">Admin</p>
+              </div>
+
+              {/* Menu */}
+              <SidebarMenu className="mt-8 w-full px-4 space-y-2">
                 {items.map((item) => {
                   const isActive = pathname === item.url;
 
                   return (
-                    <SidebarMenuItem
-                      key={item.title}
-                      className={`
-                        w-[207px]
-                        h-[44px]
-                        rounded-[8px]
-                        ml-5
-                        flex items-center
-                        transition-colors
-                        ${
-                          isActive
-                            ? "bg-[#FBEFBF] border border-transparent"
-                            : "bg-white border border-[#F1752F] hover:bg-[#FFF5D1]"
-                        }
-                      `}
-                    >
-                      <SidebarMenuButton asChild className="w-full h-full px-[23px] py-[10px]">
-                        <a href={item.url} className="flex items-center gap-[9px]">
-                          {/* Icon box */}
-                          <span className="w-6 h-6 rounded-[4px] bg-[#F1752F] flex items-center justify-center">
-                            <item.icon size={16} className="text-white" />
-                          </span>
-                          <span className="text-sm text-black">{item.title}</span>
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton asChild>
+                        <a
+                          href={item.url}
+                          className={`
+                            flex items-center gap-3 px-4 py-3 rounded-lg text-sm
+                            transition
+                            ${
+                              isActive
+                                ? "bg-orange-100 text-orange-600 font-medium"
+                                : "text-gray-600 hover:bg-gray-200"
+                            }
+                          `}
+                        >
+                          <item.icon size={18} />
+                          {item.title}
                         </a>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   );
                 })}
               </SidebarMenu>
+
             </SidebarGroupContent>
           </SidebarGroup>
         </div>
 
-        {/* Logout */}
-        <SidebarFooter className="mb-6 flex justify-center">
-          <SidebarMenu>
-            <SidebarMenuItem className="w-[207px]">
-              <SidebarMenuButton asChild className="w-full">
-                <button
-                  type="button"
-                  onClick={() => signOut()}
-                  className="
-                    w-full
-                    h-[44px]
-                    ml-5
-                    rounded-[8px]
-                    border border-[#F1752F]
-                    bg-white
-                    flex items-center
-                    px-[23px] py-[10px]
-                    gap-[9px]
-                    text-sm text-black
-                    hover:bg-[#FFF5D1]
-                  "
-                >
-                  <span className="w-6 h-6 rounded-[999px] border border-[#F1752F] flex items-center justify-center">
-                    <LogOut size={16} className="text-[#F1752F]" />
-                  </span>
-                  <span>Logout</span>
-                </button>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
+        {/* BOTTOM */}
+        <SidebarFooter className="px-6 pb-6">
+          <div className="border-t mb-4"></div>
+
+          <button
+            onClick={() => signOut()}
+            className="flex items-center gap-3 text-sm text-gray-600 hover:text-orange-600 transition"
+          >
+            <LogOut size={18} />
+            Logout
+          </button>
         </SidebarFooter>
+
       </SidebarContent>
     </Sidebar>
   );
