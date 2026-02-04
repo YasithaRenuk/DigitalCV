@@ -16,7 +16,16 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-import { Eye, Trash2, Loader2, FileText, Gem, IdCard, Pencil, Bug } from "lucide-react";
+import {
+  Eye,
+  Trash2,
+  Loader2,
+  FileText,
+  Gem,
+  IdCard,
+  Pencil,
+  Bug,
+} from "lucide-react";
 import CvTemplate from "@/app/components/ShowCV/CvTemplate";
 
 interface UserCV {
@@ -106,9 +115,7 @@ export default function ProfilePage() {
       const data = await res.json();
 
       if (data.success) {
-        setUserCVs((prev) =>
-          prev.filter((c) => c._id !== cvToDelete)
-        );
+        setUserCVs((prev) => prev.filter((c) => c._id !== cvToDelete));
       }
     } finally {
       setDeleteDialogOpen(false);
@@ -130,25 +137,22 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-[#F8F7F5] px-6 py-8">
       <div className="max-w-7xl mx-auto">
-
         {/* Welcome */}
-        <h1 className="text-2xl font-bold mb-6">
+        <h1 className="md:text-2xl text-xl font-bold mb-6">
           Welcome back, {name}!
         </h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
           {/* LEFT SIDE */}
           <div className="lg:col-span-2 space-y-6">
-
             {/* User Info */}
             <div className="bg-white rounded-xl shadow p-6">
-              <div className="flex items-center gap-5">
+              <div className="md:flex items-center gap-5">
                 <div className="w-24 h-24 rounded-full bg-orange-200 flex items-center justify-center text-3xl overflow-hidden">
                   {session?.user?.image ? (
                     <img
                       src={session.user.image}
-                      alt={name? name:" "}
+                      alt={name ? name : " "}
                       className="w-full h-full object-cover"
                     />
                   ) : (
@@ -156,7 +160,7 @@ export default function ProfilePage() {
                   )}
                 </div>
 
-                <div>
+                <div className="md:mt-0 mt-5">
                   <h2 className="text-2xl font-semibold">{name}</h2>
                   <p className="text-gray-500">{email}</p>
                 </div>
@@ -167,10 +171,7 @@ export default function ProfilePage() {
             <div className=" p-6 rounded-xl border">
               <div className="flex gap-5 mb-5">
                 <div className="w-12 h-12 rounded-lg bg-[#D0D0D0] flex items-center justify-center">
-                  <FileText
-                    className="text-black"
-                    size={20}
-                  />
+                  <FileText className="text-black" size={20} />
                 </div>
                 <h2 className="text-xl font-semibold mt-2">My CVs</h2>
               </div>
@@ -183,13 +184,11 @@ export default function ProfilePage() {
                 <div className="space-y-4">
                   {userCVs.map((cv) => (
                     <Card key={cv._id} className="p-6 rounded-xl border">
-                      <div className="flex justify-between items-start">
+                      {/* Header */}
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
                         <div className="flex gap-4 items-center">
                           <div className="w-12 h-12 rounded-lg bg-orange-100 flex items-center justify-center">
-                            <FileText
-                              className="text-orange-500"
-                              size={20}
-                            />
+                            <FileText className="text-orange-500" size={20} />
                           </div>
 
                           <div>
@@ -199,36 +198,48 @@ export default function ProfilePage() {
                             <p className="text-sm text-gray-500">
                               Last edited {formatDate(cv.createdAt)}
                             </p>
+
+                            {/* Status badge (mobile under title) */}
+                            <span className="inline-block mt-2 sm:hidden bg-green-100 text-green-700 px-3 py-1 text-sm rounded-full">
+                              {cv.states === "active"
+                                ? "Ready to Apply"
+                                : "Pending"}
+                            </span>
                           </div>
                         </div>
 
-                        <span className="bg-green-100 text-green-700 px-3 py-1 text-sm rounded-full">
-                          {cv.states == "active" ?  "Ready to Apply" : "Pending" } 
+                        {/* Status badge (desktop right side) */}
+                        <span className="hidden sm:inline-block bg-green-100 text-green-700 px-3 py-1 text-sm rounded-full">
+                          {cv.states === "active"
+                            ? "Ready to Apply"
+                            : "Pending"}
                         </span>
                       </div>
 
-                      <div className="flex justify-between items-end mt-6">
-                        <div className="flex gap-3">
+                      {/* Actions + Features */}
+                      <div className="mt-6 flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4">
+                        {/* Buttons */}
+                        <div className="md:flex md:gap-3 w-full sm:w-auto">
                           <Button
                             onClick={() => handleViewCV(cv)}
-                            className="bg-orange-500 hover:bg-orange-600 text-white px-6"
+                            className="bg-orange-500 hover:bg-orange-600 text-white w-full sm:w-auto px-6"
                           >
                             <Eye size={16} className="mr-2" />
                             View DigitalCV
                           </Button>
-
+                          
                           <Button
                             variant="destructive"
                             size="icon"
-                            onClick={() =>
-                              handleDeleteClick(cv._id)
-                            }
+                            onClick={() => handleDeleteClick(cv._id)}
+                            className="shrink-0 md:mt-0 mt-3 md:w-10 w-full"
                           >
                             <Trash2 size={16} />
                           </Button>
                         </div>
 
-                        <div className="text-sm text-gray-500 text-right space-y-1">
+                        {/* Features */}
+                        <div className="text-sm text-gray-500 space-y-1 sm:text-right">
                           <p>✔ ATS Friendly Format</p>
                           <p>✔ Keywords Optimized</p>
                         </div>
@@ -242,21 +253,16 @@ export default function ProfilePage() {
 
           {/* RIGHT SIDE */}
           <div className="space-y-6">
-
             <div className="bg-white p-6 rounded-xl shadow">
               <div className="flex gap-2 mb-4">
                 <div className="w-12 h-12 rounded-lg bg-[#F27F0D] flex items-center justify-center">
-                  <Gem
-                    className="text-white"
-                    size={20}
-                  />
+                  <Gem className="text-white" size={20} />
                 </div>
-                <h3 className="font-semibold mt-2">
-                  Extend Membership
-                </h3>
+                <h3 className="font-semibold mt-2">Extend Membership</h3>
               </div>
               <p className="text-sm text-gray-500 mb-4">
-                Extend your plan  to keep DigitalCV for longer Available for 6 months/1year
+                Extend your plan to keep DigitalCV for longer Available for 6
+                months/1year
               </p>
 
               <Button
@@ -269,17 +275,10 @@ export default function ProfilePage() {
 
             <div className="bg-white p-6 rounded-xl shadow">
               <div className="flex gap-2 mb-4">
-                
                 <div className="w-12 h-12 rounded-lg bg-[#F27F0D] flex items-center justify-center">
-                  <IdCard
-                    className="text-white"
-                    size={20}
-                  />
+                  <IdCard className="text-white" size={20} />
                 </div>
-                <h3 className="font-semibold mt-2">
-                  Change Username & PIN
-                </h3>
-
+                <h3 className="font-semibold mt-2">Change Username & PIN</h3>
               </div>
               <p className="text-sm text-gray-500 mb-4">
                 Request to Change the Username and PIN
@@ -287,14 +286,12 @@ export default function ProfilePage() {
               <div className="flex gap-3">
                 <Button
                   variant="outline"
-                  className="flex-1 shadow-0 text-[#F27F0D]" 
+                  className="flex-1 shadow-0 text-[#F27F0D]"
                   onClick={() => onClick("Change username and PIN")}
                 >
                   <div className="flex gap-2 p-2">
-                    <span className="">
-                      Edit Username
-                    </span> 
-                    <Pencil className="mt-1"/>
+                    <span className="">Edit Username</span>
+                    <Pencil className="mt-1" />
                   </div>
                 </Button>
 
@@ -304,39 +301,30 @@ export default function ProfilePage() {
                   onClick={() => onClick("Change username and PIN")}
                 >
                   <div className="flex gap-2 p-2">
-                    <span className="">
-                      Edit PIN
-                    </span> 
-                    <Pencil className="mt-1"/>
+                    <span className="">Edit PIN</span>
+                    <Pencil className="mt-1" />
                   </div>
                 </Button>
               </div>
             </div>
 
             <div className="bg-white p-6 rounded-xl shadow">
-              
               <div className="flex gap-2 mb-4">
                 <div className="w-12 h-12 rounded-lg bg-[#FEE2E2] flex items-center justify-center">
-                  <Bug
-                    className="text-[#DC2626]"
-                    size={20}
-                  />
+                  <Bug className="text-[#DC2626]" size={20} />
                 </div>
-                <h3 className="font-semibold mt-2">
-                  Report an Issue
-                </h3>
+                <h3 className="font-semibold mt-2">Report an Issue</h3>
               </div>
 
               <p className="text-sm text-gray-500 mb-4">
-                Issue with your CV or having trouble with ATS parsing? Let us know.
+                Issue with your CV or having trouble with ATS parsing? Let us
+                know.
               </p>
 
               <Button
                 variant="link"
                 className="p-0 text-orange-600"
-                onClick={() =>
-                  onClick("Report an issue on Your CV")
-                }
+                onClick={() => onClick("Report an issue on Your CV")}
               >
                 Open Support Ticket →
               </Button>
@@ -356,10 +344,7 @@ export default function ProfilePage() {
       </div>
 
       {/* ===== CV Preview Dialog ===== */}
-      <Dialog
-        open={viewCVDialogOpen}
-        onOpenChange={setViewCVDialogOpen}
-      >
+      <Dialog open={viewCVDialogOpen} onOpenChange={setViewCVDialogOpen}>
         <DialogContent className="max-w-5xl h-[90vh] flex flex-col overflow-hidden">
           <DialogHeader>
             <DialogTitle>CV Preview</DialogTitle>
@@ -368,28 +353,19 @@ export default function ProfilePage() {
           <div className="flex-1 min-h-0">
             <ScrollArea className="h-full w-full bg-white rounded-lg">
               <div className="p-6">
-                {selectedCV && (
-                  <CvTemplate data={selectedCV} />
-                )}
+                {selectedCV && <CvTemplate data={selectedCV} />}
               </div>
             </ScrollArea>
           </div>
 
           <DialogFooter>
-            <Button
-              onClick={() => setViewCVDialogOpen(false)}
-            >
-              Close
-            </Button>
+            <Button onClick={() => setViewCVDialogOpen(false)}>Close</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* ===== Delete Dialog ===== */}
-      <Dialog
-        open={deleteDialogOpen}
-        onOpenChange={setDeleteDialogOpen}
-      >
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Delete CV</DialogTitle>
@@ -417,7 +393,6 @@ export default function ProfilePage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
     </div>
   );
 }
