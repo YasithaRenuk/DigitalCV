@@ -14,20 +14,9 @@ function SearchCVContent() {
 
   return (
     <div className="flex flex-col md:flex-row min-h-[calc(100vh-150px)] pt-10 md:pt-1">
-      {/* Left Section (Hidden on Mobile) */}
-      <div className="hidden md:flex md:w-[50%] items-center justify-center mt-5 mb-5">
-        <div className="relative bg-white shadow-md shadow-primary rounded-lg w-[70%] mx-auto border-2 border-primary overflow-hidden aspect-square">
-          <Image
-            src = {img}
-            alt="coverimg"
-            fill
-            className="object-cover"
-          />
-        </div>
-      </div>
-
+      
       {/* Right Section */}
-      <div className="w-full md:w-[50%] flex items-center justify-center">
+      <div className="w-full md:w-full flex items-center justify-center">
         <SearchDigitalCV username={username} pin={pin} />
       </div>
     </div>
