@@ -144,16 +144,19 @@ export default function UploadCV() {
       setIsLoading(false);
     }
   };
-
   return (
-    <div className="max-w-md mx-auto p-6 bg-white">
-      <h2 className="text-2xl font-semibold text-center mb-6">
+    <div className="w-full max-w-lg bg-white rounded-2xl shadow-md p-8">
+      {/* Title */}
+      <h2 className="text-3xl font-bold mb-2 text-gray-900 text-center">
         Upload Your CV
       </h2>
+      <p className="text-gray-500 mb-6 text-center">
+        Upload the CV to build your professional profile. We'll optimize the rest.
+      </p>
 
-      {/* Backend error */}
+      {/* Backend Error */}
       {backendError && (
-        <div className="flex items-center gap-2 mb-4 p-3 rounded border border-red-300 bg-red-50">
+        <div className="flex items-center gap-2 mb-4 p-3 rounded-lg border border-red-300 bg-red-50">
           <AlertCircle className="w-5 h-5 text-red-500" />
           <p className="text-sm text-red-600">{backendError}</p>
         </div>
@@ -162,108 +165,93 @@ export default function UploadCV() {
       {/* Username */}
       <div className="mb-4">
         <Input
-          type="text"
-          placeholder="Enter username"
+          placeholder="Username"
           value={username}
           onChange={(e) => {
-            // Optional: enforce rules while typing
             const v = e.target.value.toLowerCase().replace(/\s+/g, "");
             setUsername(v);
             setErrors((prev) => ({ ...prev, username: undefined }));
-            setBackendError("");
           }}
-          className={`border-orange-300 ${
-            errors.username ? "border-red-500 bg-red-50" : ""
+          className={`h-12 ${
+            errors.username ? "border-red-500 bg-red-50" : "border-gray-300"
           }`}
         />
         {errors.username && (
-          <div className="flex items-center gap-1 mt-1.5">
-            <AlertCircle className="w-4 h-4 text-red-500" />
-            <p className="text-red-500 text-sm">{errors.username}</p>
-          </div>
+          <p className="text-sm text-red-500 mt-1">{errors.username}</p>
         )}
       </div>
 
       {/* PIN */}
-      <div className="mb-4">
+      <div className="mb-6">
         <div className="relative">
           <Input
             type={showPword ? "text" : "password"}
-            placeholder="Enter PIN"
+            placeholder="4 Digit PIN"
             value={pin}
             onChange={(e) => {
-              // Optional: enforce digits only + max length 4
               const v = e.target.value.replace(/\D/g, "").slice(0, 4);
               setPin(v);
               setErrors((prev) => ({ ...prev, pin: undefined }));
-              setBackendError("");
             }}
-            className={`pr-10 border-orange-300 ${
-              errors.pin ? "border-red-500 bg-red-50" : ""
+            className={`h-12 pr-10 ${
+              errors.pin ? "border-red-500 bg-red-50" : "border-gray-300"
             }`}
           />
-
           <span
-            className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500 hover:text-gray-700 transition-colors"
             onClick={() => setShowPword(!showPword)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500"
           >
             {showPword ? <Eye /> : <EyeClosed />}
           </span>
         </div>
-
         {errors.pin && (
-          <div className="flex items-center gap-1 mt-1.5">
-            <AlertCircle className="w-4 h-4 text-red-500" />
-            <p className="text-red-500 text-sm">{errors.pin}</p>
-          </div>
+          <p className="text-sm text-red-500 mt-1">{errors.pin}</p>
         )}
       </div>
 
-      {/* File Upload */}
+      {/* Upload Area */}
       <label
-        className={`block border rounded-lg p-6 text-center cursor-pointer mb-4 ${
-          errors.cv ? "border-red-500 bg-red-50" : "border-orange-300"
-        } hover:bg-orange-50 transition`}
+        className={`flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-10 cursor-pointer transition
+          ${
+            errors.cv
+              ? "border-red-500 bg-red-50"
+              : "border-orange-400 hover:bg-orange-50"
+          }`}
       >
         <input
           type="file"
-          accept=".pdf,.doc,.docx,image/*"
           className="hidden"
           multiple
+          accept=".pdf,.doc,.docx,image/*"
           onChange={handleUpload}
         />
-        <div className="flex flex-col items-center justify-center">
-          <img
-            src="/UploadtoCloud.png"
-            alt="Upload Icon"
-            className="w-10 h-10 mb-2"
-          />
-          <span className="text-gray-600">Upload Your CV here</span>
+
+        <div className="w-14 h-14 rounded-full bg-orange-100 flex items-center justify-center mb-3">
+          <img src="/UploadtoCloud.png" className="w-7 h-7" />
         </div>
-        <p className="text-xs text-gray-400 mt-2">
-          Supported: PDF, DOC, DOCX, or Image
+
+        <p className="font-medium text-gray-700">Upload Existing CV</p>
+        <p className="text-sm text-gray-400 mt-1">
+          PDF, DOC, DOCX or Image
         </p>
+
         {errors.cv && (
-          <div className="flex items-center gap-1 mt-2 justify-center">
-            <AlertCircle className="w-4 h-4 text-red-500" />
-            <p className="text-red-500 text-sm">{errors.cv}</p>
-          </div>
+          <p className="text-sm text-red-500 mt-3">{errors.cv}</p>
         )}
       </label>
 
       {/* Selected Files */}
       {cvFiles.length > 0 && (
-        <ul className="mb-4 text-sm text-gray-700 space-y-2">
+        <ul className="mt-4 space-y-2 text-sm">
           {cvFiles.map((file, idx) => (
             <li
               key={idx}
-              className="flex justify-between items-center p-2 bg-gray-50 border border-gray-200 rounded"
+              className="flex justify-between items-center bg-gray-50 border rounded-lg px-3 py-2"
             >
               <span className="truncate">{file.name}</span>
               <button
-                type="button"
-                className="text-red-500 text-sm hover:underline"
                 onClick={() => handleRemoveFile(idx)}
+                className="text-red-500 hover:underline"
               >
                 Remove
               </button>
@@ -272,19 +260,21 @@ export default function UploadCV() {
         </ul>
       )}
 
-      <p className="text-xs text-center mb-4 bg-[#F1752F]/10 p-2 rounded-full">
-        Keep your username & PIN safe, required for recruiters to access your CV.
+      {/* Info */}
+      <p className="text-xs text-center mt-5 bg-orange-100 text-orange-700 py-2 rounded-full">
+        Keep your username & PIN safe — recruiters need them to view your CV.
       </p>
 
-      {/* Create Button */}
+      {/* Submit */}
       <Button
         onClick={handleCreate}
-        className="w-full text-white hover:bg-white hover:text-secondary hover:border-secondary hover:border-2"
-        variant="secondary"
         disabled={isLoading}
+        variant="secondary"
+        className="w-full mt-6 h-12 text-white hover:bg-white hover:text-secondary hover:border-secondary hover:border-2"
       >
         {isLoading ? "Creating..." : "Create"}
       </Button>
     </div>
   );
+
 }
