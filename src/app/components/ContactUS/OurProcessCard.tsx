@@ -20,9 +20,9 @@ export default function OurProcessCard() {
   ];
 
   return (
-    <div className="max-w-2xl mx-auto shadow-md shadow-primary border-primary border-2 rounded-xl p-6 md:p-8 text-center md:mt-2.5 md:mb-2.5">
+    <div className="max-w-2xl mx-auto rounded-xl p-6 md:p-8 text-center md:mt-2.5 md:mb-2.5">
       {/* Header */}
-      <h2 className="text-2xl md:text-3xl font-semibold mb-2">Our Process</h2>
+      <h2 className="text-2xl md:text-3xl font-semibold mb-2 text-black">Our Process</h2>
      
       {/* Steps */}
       <div className="flex flex-col space-y-6 mt-6 md:mt-5">
@@ -31,7 +31,7 @@ export default function OurProcessCard() {
             key={index}
             className="flex flex-col md:flex-row items-center md:items-start md:space-x-4 text-center md:text-left bg-yellow-50 rounded-lg p-4"
           >
-            <div className="bg-yellow-200 rounded-full p-4 md:p-6 flex items-center justify-center mb-3 md:mb-0">
+            <div className="rounded-full p-4 md:p-6 flex items-center justify-center mb-3 md:mb-0">
               {step.icon}
             </div>
             <div>
