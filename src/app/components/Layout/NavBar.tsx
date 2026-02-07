@@ -63,7 +63,8 @@ export default function Navbar() {
               {/* Sign up */}
               <Button
                 className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg"
-                onClick={() => router.push("/signup")}
+                // onClick={() => router.push("/signup")}
+                onClick={() => signIn("google")}
               >
                 Sign up
               </Button>

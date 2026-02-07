@@ -60,7 +60,7 @@ export default function Footer() {
             <Link href="/privacyPolicy" className="hover:text-primary">
               Privacy Policy
             </Link>
-            <Link href="/terms" className="hover:text-primary">
+            <Link href="/TAC" className="hover:text-primary">
               Terms of Service
             </Link>
           </div>
