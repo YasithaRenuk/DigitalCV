@@ -188,7 +188,7 @@ function SearchCVContent() {
         <div className="flex flex-col gap-2">
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">One Last Step!</h1>
           <p className="text-slate-500 text-sm leading-relaxed">
-            Your CV is ready. Proceed to payment to download it without watermarks, or edit it if you spot any issues.
+            Your CV is ready. Proceed to payment to make it availabil for searchs.
           </p>
         </div>
 
@@ -199,7 +199,7 @@ function SearchCVContent() {
             onClick={handleSubmit}
           >
             <CreditCard className="mr-2 h-5 w-5" />
-            Pay & Download CV
+            Make CV Online With Payment
           </Button>
 
           <div className="relative py-2">
