@@ -207,24 +207,26 @@ export default function ProfilePage() {
 
                             {/* Status badge (mobile under title) */}
                             <span
-                              className={`hidden sm:inline-block px-3 py-1 text-sm rounded-full ${
-                                stateClasses[cv.states] ?? "bg-gray-100 text-gray-700"
-                              }`}
+                              className={`inline-block mt-2 sm:hidden px-3 py-1 text-sm rounded-full ${stateClasses[cv.states] ?? "bg-gray-100 text-gray-700"}`}
                             >
                               {cv.states === "active"
                                 ? "Ready to Apply"
                                 : cv.states === "pending"
-                                ? "Pending"
-                                : "Deactivated"}
+                                  ? "Pending"
+                                  : "Deactivated"}
                             </span>
                           </div>
                         </div>
 
                         {/* Status badge (desktop right side) */}
-                        <span className="hidden sm:inline-block bg-green-100 text-green-700 px-3 py-1 text-sm rounded-full">
+                        <span
+                          className={`hidden sm:inline-block ${stateClasses[cv.states] ?? "bg-gray-100 text-gray-700"} px-3 py-1 text-sm rounded-full`}
+                        >
                           {cv.states === "active"
                             ? "Ready to Apply"
-                            : "Pending"}
+                            : cv.states === "pending"
+                              ? "Pending"
+                              : "Deactivated"}
                         </span>
                       </div>
 
@@ -239,7 +241,7 @@ export default function ProfilePage() {
                             <Eye size={16} className="mr-2" />
                             View DigitalCV
                           </Button>
-                          
+
                           <Button
                             variant="destructive"
                             size="icon"
