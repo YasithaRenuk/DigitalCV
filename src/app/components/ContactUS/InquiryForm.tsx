@@ -12,7 +12,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { Mail, Loader2 } from "lucide-react";
+import { Mail, Loader2, Send, CheckCircle2 } from "lucide-react";
 import ReportCard from "./ReportCard";
 
 interface InquiryFormProps {
@@ -53,7 +53,6 @@ export default function InquiryForm({ reasonTopic = "" }: InquiryFormProps) {
   // Auto-select topic if valid reasonTopic is provided
   useEffect(() => {
     if (reasonTopic && topics.includes(reasonTopic)) {
-      console.log("reasonTopic",reasonTopic)
       setForm((prev) => ({ ...prev, topic: reasonTopic }));
     }
   }, [reasonTopic]);
@@ -119,67 +118,87 @@ export default function InquiryForm({ reasonTopic = "" }: InquiryFormProps) {
   // If report was submitted successfully, show the report card
   if (submittedReport) {
     return (
-      <div className="w-full max-w-xl mx-auto px-4 sm:px-6 md:px-8">
+      <div className="space-y-6">
+        <div className="bg-green-50 border border-green-200 rounded-xl p-6 text-center">
+            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
+                <CheckCircle2 className="h-6 w-6 text-green-600" />
+            </div>
+            <h3 className="text-lg font-medium text-green-900">Inquiry Sent Successfully!</h3>
+            <p className="text-sm text-green-600 mt-2">
+                We have received your message and will get back to you shortly.
+            </p>
+        </div>
         <ReportCard report={submittedReport} />
         <Button
           onClick={() => setSubmittedReport(null)}
           variant="outline"
-          className="w-full mt-4"
+          className="w-full border-2 hover:bg-gray-50 hover:text-gray-900 text-gray-700 font-medium py-6"
         >
-          Submit Another Report
+          Submit Another Inquiry
         </Button>
       </div>
     );
   }
 
   return (
-    <div className="w-full max-w-xl mx-auto px-4 sm:px-6 md:px-8">
+    <div className="w-full">
       {/* Heading */}
-      <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6 text-gray-900 text-center md:text-left">
-        Send An Inquiry To Us
-      </h2>
+      <div className="mb-8">
+         <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+            Get in touch
+        </h2>
+        <p className="text-gray-500">
+            We'd love to hear from you. Please fill out this form.
+        </p>
+      </div>
 
       {/* Error Message */}
       {submitError && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
-          <p className="text-sm text-red-600">{submitError}</p>
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+           <div className="shrink-0 mt-0.5">
+             <div className="h-2 w-2 bg-red-500 rounded-full" />
+           </div>
+          <p className="text-sm text-red-600 font-medium">{submitError}</p>
         </div>
       )}
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* Name fields */}
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-gray-700">First Name <span className="text-red-500">*</span></label>
             <Input
               name="firstName"
-              placeholder="First Name"
+              placeholder="Enter first name"
               value={form.firstName}
               onChange={(e) => setForm({ ...form, firstName: e.target.value })}
               disabled={isSubmitting}
               className={`${
-                errors.firstName ? "border-red-500" : "border-secondary"
-              } w-full`}
+                errors.firstName ? "border-red-500 focus-visible:ring-red-500 bg-red-50/50" : "border-gray-200 focus-visible:ring-blue-500"
+              } w-full h-11 text-base transition-all duration-200`}
             />
             {errors.firstName && (
-              <p className="text-sm text-red-500 mt-1">{errors.firstName}</p>
+              <p className="text-xs text-red-500 font-medium ml-1">{errors.firstName}</p>
             )}
           </div>
 
-          <div className="flex-1">
+          <div className="space-y-1.5">
+             <label className="text-sm font-medium text-gray-700">Last Name</label>
             <Input
               name="lastName"
-              placeholder="Last Name"
+              placeholder="Enter last name"
               value={form.lastName}
               onChange={(e) => setForm({ ...form, lastName: e.target.value })}
               disabled={isSubmitting}
-              className="border-secondary w-full"
+              className="border-gray-200 focus-visible:ring-blue-500 w-full h-11 text-base transition-all duration-200"
             />
           </div>
         </div>
 
         {/* Topic */}
-        <div>
+        <div className="space-y-1.5">
+           <label className="text-sm font-medium text-gray-700">Topic <span className="text-red-500">*</span></label>
           <Select
             value={form.topic || undefined}
             onValueChange={(value) => setForm({ ...form, topic: value })}
@@ -187,57 +206,57 @@ export default function InquiryForm({ reasonTopic = "" }: InquiryFormProps) {
           >
             <SelectTrigger
               className={`${
-                errors.topic ? "border-red-500" : "border-secondary"
-              } border w-full`}
+                errors.topic ? "border-red-500 focus:ring-red-500 bg-red-50/50" : "border-gray-200 focus:ring-blue-500"
+              } w-full h-11 text-base transition-all duration-200`}
             >
               <SelectValue placeholder="Select a topic" />
             </SelectTrigger>
             <SelectContent>
               {topics.map((topic) => (
-                <SelectItem key={topic} value={topic}>
+                <SelectItem key={topic} value={topic} className="cursor-pointer">
                   {topic}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
           {errors.topic && (
-            <p className="text-sm text-red-500 mt-1">{errors.topic}</p>
+            <p className="text-xs text-red-500 font-medium ml-1">{errors.topic}</p>
           )}
         </div>
 
         {/* Message */}
-        <div>
+        <div className="space-y-1.5">
+           <label className="text-sm font-medium text-gray-700">Message <span className="text-red-500">*</span></label>
           <Textarea
             name="message"
-            placeholder="Message"
+            placeholder="How can we help you?"
             value={form.message}
             onChange={(e) => setForm({ ...form, message: e.target.value })}
             disabled={isSubmitting}
-            className={`resize-none h-40 sm:h-48 ${
-              errors.message ? "border-red-500" : "border-secondary"
-            }`}
+            className={`resize-none min-h-[160px] p-4 text-base ${
+              errors.message ? "border-red-500 focus-visible:ring-red-500 bg-red-50/50" : "border-gray-200 focus-visible:ring-blue-500"
+            } transition-all duration-200`}
           />
           {errors.message && (
-            <p className="text-sm text-red-500 mt-1">{errors.message}</p>
+            <p className="text-xs text-red-500 font-medium ml-1">{errors.message}</p>
           )}
         </div>
 
         {/* Submit */}
         <Button
           type="submit"
-          variant="secondary"
           disabled={isSubmitting}
-          className="w-full flex items-center justify-center gap-2 py-6 text-base sm:text-lg font-medium hover:border-secondary hover:text-black hover:border-2 hover:bg-white transition disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full h-12 text-white font-semibold text-base shadow-lg shadow-blue-600/20 transition-all duration-300 transform active:scale-[0.99]"
         >
           {isSubmitting ? (
             <>
-              <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
-              Submitting...
+              <Loader2 className="w-5 h-5 animate-spin mr-2" />
+              Sending...
             </>
           ) : (
             <>
-              <Mail className="w-4 h-4 sm:w-5 sm:h-5" />
-              Send
+              Send Message
+              <Send className="w-5 h-5 ml-2" />
             </>
           )}
         </Button>

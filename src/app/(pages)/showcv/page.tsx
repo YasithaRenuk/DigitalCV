@@ -4,10 +4,9 @@ export const dynamic = "force-dynamic";
 import { Suspense, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import CvFileUploader from "@/app/components/ShowCV/CvFileUploader";
 import { Button } from "@/components/ui/button";
 import CvTemplate, { CVData } from "@/app/components/ShowCV/CvTemplate";
-import { ScrollArea } from "@/components/ui/scroll-area"; // ✅ ADD THIS
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,6 +18,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Loader2, AlertCircle, CreditCard, Trash2, FileText } from "lucide-react";
 
 type GetCVResponse = {
   success: boolean;
@@ -68,9 +68,9 @@ function SearchCVContent() {
         }
 
         setCvData(json.data);
-      } catch (error: any) {
+      } catch (error) {
         console.error("Error fetching CV", error);
-        setCvError(error.message ?? "Error loading CV");
+        setCvError(error instanceof Error ? error.message : "Error loading CV");
       } finally {
         setLoadingCV(false);
       }
@@ -81,7 +81,8 @@ function SearchCVContent() {
 
   const handleSubmit = async () => {
     try {
-      const userId = (session as any)?.user?.id;
+      // safe access to user id
+      const userId = (session?.user as { id?: string } | undefined)?.id;
 
       if (!userId || !id) {
         console.error("Missing userId or CVID");
@@ -142,69 +143,115 @@ function SearchCVContent() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row min-h-[calc(100vh-150px)] pt-10 md:pt-0 gap-6 md:gap-0">
-      {/* CV Preview Section - Scrollable */}
-      <div className="w-full md:w-[90%] flex items-center justify-center mt-2 mb-2 md:mt-5 md:mb-5">
-        <ScrollArea
-          className="relative bg-white shadow-md shadow-primary rounded-lg 
-                   w-[90%] md:w-[80%] mx-auto border-2 border-primary 
-                   h-[calc(100vh-150px)] md:h-[80vh]"
-        >
-          {loadingCV && (
-            <div className="w-full h-full flex items-center justify-center text-sm text-gray-500">
-              Loading CV...
-            </div>
-          )}
+    <div className="flex flex-col lg:flex-row min-h-[calc(100vh-64px)] bg-slate-50/50">
+      {/* Left Section - CV Preview */}
+      <div className="flex-1 flex flex-col items-center justify-center p-4 lg:p-8 overflow-hidden">
+        <div className="w-full max-w-4xl h-full flex flex-col">
+          <div className="mb-4 flex items-center gap-2 text-slate-500 lg:hidden">
+            <FileText className="w-4 h-4" />
+            <span className="text-sm font-medium">CV Preview</span>
+          </div>
+          
+          <div className="relative flex-1 w-full bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden ring-1 ring-slate-900/5">
+            <ScrollArea className="h-[60vh] lg:h-[calc(100vh-140px)] w-full">
+              <div className="min-h-full flex flex-col items-center justify-center p-4">
+                {loadingCV && (
+                  <div className="flex flex-col items-center gap-4 text-slate-500 animate-in fade-in duration-500">
+                    <Loader2 className="h-10 w-10 animate-spin text-primary" />
+                    <p className="text-sm font-medium">Preparing your CV...</p>
+                  </div>
+                )}
 
-          {!loadingCV && cvError && (
-            <div className="w-full h-full flex items-center justify-center text-sm text-red-500 text-center px-4">
-              {cvError}
-            </div>
-          )}
+                {!loadingCV && cvError && (
+                  <div className="flex flex-col items-center gap-4 text-red-500 max-w-sm text-center p-8 bg-red-50 rounded-lg border border-red-100">
+                    <AlertCircle className="h-10 w-10" />
+                    <p className="text-sm font-medium">{cvError}</p>
+                    <Button variant="outline" size="sm" onClick={() => window.location.reload()} className="mt-2">
+                      Reload Page
+                    </Button>
+                  </div>
+                )}
 
-          {!loadingCV && !cvError && cvData && <CvTemplate data={cvData} />}
-        </ScrollArea>
+                {!loadingCV && !cvError && cvData && (
+                  <div className="w-full h-full bg-white">
+                    <CvTemplate data={cvData} />
+                  </div>
+                )}
+              </div>
+            </ScrollArea>
+          </div>
+        </div>
       </div>
 
-      {/* Right Section – uploader + button */}
-      <div className="w-full md:w-[50%] flex items-center justify-center pb-10 md:pb-0">
-        <div className="flex flex-col items-center justify-center w-full gap-4 px-4 max-w-md">
-          {/* <CvFileUploader userCVId={id} /> */}
+      {/* Right Section - Actions */}
+      <div className="lg:w-96 w-full flex flex-col border-t lg:border-t-0 lg:border-l border-slate-200 bg-white lg:bg-white/50 backdrop-blur-sm p-6 lg:p-8 gap-8">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">One Last Step!</h1>
+          <p className="text-slate-500 text-sm leading-relaxed">
+            Your CV is ready. Proceed to payment to download it without watermarks, or edit it if you spot any issues.
+          </p>
+        </div>
 
-          {/* <span className="text-center w-full">or</span> */}
-
+        <div className="flex flex-col gap-4 w-full">
           <Button
-            className="max-w-2xs w-full text-white hover:bg-white hover:text-secondary hover:border-secondary hover:border-2"
-            variant="secondary"
+            className="w-full h-12 text-base font-medium shadow-lg hover:shadow-xl transition-all duration-200"
+            size="lg"
             onClick={handleSubmit}
           >
-            Make CV Online With Payment
+            <CreditCard className="mr-2 h-5 w-5" />
+            Pay & Download CV
           </Button>
-          <span className="text-center w-full">or</span>
+
+          <div className="relative py-2">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-slate-200" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-2 text-slate-500">Or</span>
+            </div>
+          </div>
+
           <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
             <AlertDialogTrigger asChild>
               <Button
-                className="max-w-2xs w-full mt-2 text-white bg-red-500 hover:bg-white hover:text-red-500 hover:border-red-500 hover:border-2"
-                variant="destructive"
+                variant="outline"
+                className="w-full h-12 text-slate-600 hover:text-red-600 hover:bg-red-50 hover:border-red-200 transition-colors"
+                size="lg"
               >
-                Try Again
+                <Trash2 className="mr-2 h-5 w-5" />
+                Discard & Start Over
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>Delete this CV?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This will delete the current CV so you can upload again. This action cannot be undone.
+                  This will permanently delete the current CV draft. You will need to re-enter your information to create a new one.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDeleteCV} disabled={isDeleting}>
-                  {isDeleting ? "Deleting..." : "Delete & Retry"}
+                <AlertDialogAction 
+                  onClick={handleDeleteCV} 
+                  disabled={isDeleting}
+                  className="bg-red-600 hover:bg-red-700"
+                >
+                  {isDeleting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Deleting...
+                    </>
+                  ) : (
+                    "Delete & Retry"
+                  )}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
+        </div>
+
+        <div className="mt-auto pt-8 text-center text-xs text-slate-400">
+           Secure payment powered by Genie Business.
         </div>
       </div>
     </div>
@@ -213,7 +260,11 @@ function SearchCVContent() {
 
 export default function SearchCV() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen bg-slate-50">
+        <Loader2 className="h-8 w-8 animate-spin text-primary/50" />
+      </div>
+    }>
       <SearchCVContent />
     </Suspense>
   );

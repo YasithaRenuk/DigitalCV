@@ -1,253 +1,182 @@
 import React from "react";
+import { Shield, Mail, Lock, FileText, CreditCard, User, Server, AlertCircle } from "lucide-react";
 
 export default function PrivacyPolicy() {
   const lastUpdated = "2024/06/12";
 
   return (
-    <main style={styles.page}>
-      <article style={styles.card}>
-        <header style={styles.header}>
-          <h1 style={styles.title}>🔐 Privacy Policy</h1>
-          <p style={styles.updated}>
-            <strong>Last Updated:</strong> [{lastUpdated}]
-          </p>
+    <main className="min-h-screen bg-gray-50/50 py-12 px-4 sm:px-6 lg:px-8">
+      <article className="max-w-4xl mx-auto bg-white shadow-xl shadow-gray-200/50 rounded-2xl overflow-hidden border border-gray-100">
+        <header className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white p-8 sm:p-12 text-center relative overflow-hidden">
+          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
+          <div className="relative z-10">
+            <div className="flex justify-center mb-4">
+              <span className="p-3 bg-white/10 rounded-full backdrop-blur-sm">
+                <Shield className="w-8 h-8 text-blue-400" />
+              </span>
+            </div>
+            <h1 className="text-3xl sm:text-4xl font-bold mb-3 tracking-tight">Privacy Policy</h1>
+            <p className="text-gray-300 text-sm font-medium uppercase tracking-wider">
+              Last Updated: <span className="text-white">{lastUpdated}</span>
+            </p>
+          </div>
         </header>
 
-        <p style={styles.paragraph}>
-          This Privacy Policy explains how DigitalCV.lk, owned and operated by
-          DigitalCV (Private) Limited, collects, uses, stores, and protects your
-          personal information when you use our platform.
-        </p>
-        <p style={styles.paragraph}>
-          By using DigitalCV.lk, you agree to the practices described in this
-          policy.
-        </p>
+        <div className="p-8 sm:p-12 space-y-12">
+          {/* Introduction */}
+          <div className="prose prose-gray max-w-none">
+            <p className="text-lg text-gray-600 leading-relaxed border-l-4 border-blue-500 pl-4 italic">
+              This Privacy Policy explains how DigitalCV.lk, owned and operated by
+              DigitalCV (Private) Limited, collects, uses, stores, and protects your
+              personal information when you use our platform. By using DigitalCV.lk, you agree to the practices described in this policy.
+            </p>
+          </div>
 
-        <Section title="1. Who We Are">
-          <p style={styles.paragraph}>
-            DigitalCV.lk is an online digital resume platform operated by
-            DigitalCV (Private) Limited, Sri Lanka.
-          </p>
-          <p style={styles.paragraph}>
-            All references to “DigitalCV”, “we”, “our”, or “us” refer to DigitalCV
-            (Private) Limited.
-          </p>
-        </Section>
+          <Section title="1. Who We Are" icon={<User className="w-5 h-5" />}>
+            <p className="text-gray-600 leading-relaxed">
+              DigitalCV.lk is an online digital resume platform operated by
+              DigitalCV (Private) Limited, Sri Lanka. All references to “DigitalCV”, “we”, “our”, or “us” refer to DigitalCV
+              (Private) Limited.
+            </p>
+          </Section>
 
-        <Section title="2. Information We Collect">
-          <SubTitle>a) Information You Provide</SubTitle>
-          <p style={styles.paragraph}>When you use our services, we may collect:</p>
-          <ul style={styles.list}>
-            <li style={styles.listItem}>Name</li>
-            <li style={styles.listItem}>Email address (via Google Login)</li>
-            <li style={styles.listItem}>Username and 4-digit PIN</li>
-            <li style={styles.listItem}>
-              Uploaded CV files (PDF, DOC, image, handwritten CV)
-            </li>
-            <li style={styles.listItem}>
-              Payment confirmation details (we do not store card details)
-            </li>
-          </ul>
+          <Section title="2. Information We Collect" icon={<FileText className="w-5 h-5" />}>
+            <div className="grid md:grid-cols-2 gap-8">
+              <div>
+                <SubTitle>a) Information You Provide</SubTitle>
+                <p className="text-gray-600 mb-4">When you use our services, we may collect:</p>
+                <ul className="space-y-2">
+                  <ListItem>Name</ListItem>
+                  <ListItem>Email address (via Google Login)</ListItem>
+                  <ListItem>Username and 4-digit PIN</ListItem>
+                  <ListItem>Uploaded CV files</ListItem>
+                  <ListItem>Payment confirmation details</ListItem>
+                </ul>
+              </div>
+              
+              <div>
+                <SubTitle>b) Automatically Collected</SubTitle>
+                <p className="text-gray-600 mb-4">We automatically collect certain data:</p>
+                <ul className="space-y-2">
+                  <ListItem>IP address</ListItem>
+                  <ListItem>Device and browser type</ListItem>
+                  <ListItem>Access time and usage logs</ListItem>
+                  <ListItem>CV access activity</ListItem>
+                </ul>
+              </div>
+            </div>
+          </Section>
 
-          <SubTitle>b) Automatically Collected Information</SubTitle>
-          <ul style={styles.list}>
-            <li style={styles.listItem}>IP address</li>
-            <li style={styles.listItem}>Device and browser type</li>
-            <li style={styles.listItem}>Access time and usage logs</li>
-            <li style={styles.listItem}>
-              CV access activity (for security and audit purposes)
-            </li>
-          </ul>
-        </Section>
+          <Section title="3. How We Use Your Information" icon={<Server className="w-5 h-5" />}>
+            <div className="bg-blue-50/50 rounded-xl p-6 border border-blue-100">
+              <ul className="grid sm:grid-cols-2 gap-4">
+                <ListItem>Create and host your Digital CV</ListItem>
+                <ListItem>Authenticate users and recruiters</ListItem>
+                <ListItem>Enable secure CV access via PIN</ListItem>
+                <ListItem>Process payments and manage validity</ListItem>
+                <ListItem>Provide customer support</ListItem>
+                <ListItem>Improve system performance</ListItem>
+                <ListItem>Comply with legal obligations</ListItem>
+              </ul>
+            </div>
+          </Section>
 
-        <Section title="3. How We Use Your Information">
-          <p style={styles.paragraph}>We use your information to:</p>
-          <ul style={styles.list}>
-            <li style={styles.listItem}>Create and host your Digital CV</li>
-            <li style={styles.listItem}>Authenticate users and recruiters</li>
-            <li style={styles.listItem}>
-              Enable secure CV access via username &amp; PIN
-            </li>
-            <li style={styles.listItem}>Process payments and manage validity</li>
-            <li style={styles.listItem}>Provide customer support</li>
-            <li style={styles.listItem}>
-              Improve system performance and prevent abuse
-            </li>
-            <li style={styles.listItem}>
-              Comply with legal or regulatory obligations
-            </li>
-          </ul>
-        </Section>
+          <Section title="4. CV Access & Visibility" icon={<Lock className="w-5 h-5" />}>
+            <ul className="space-y-3">
+              <ListItem>Your Digital CV is <strong>private by default</strong>.</ListItem>
+              <ListItem>Only people who know your username and PIN can access your CV.</ListItem>
+              <ListItem>Recruiters can download your CV only after you activate it.</ListItem>
+              <ListItem>DigitalCV does not publicly list or promote your CV.</ListItem>
+            </ul>
+          </Section>
 
-        <Section title="4. CV Access & Visibility">
-          <ul style={styles.list}>
-            <li style={styles.listItem}>Your Digital CV is private by default.</li>
-            <li style={styles.listItem}>
-              Only people who know your username and PIN can access your CV.
-            </li>
-            <li style={styles.listItem}>
-              Recruiters can download your CV only after you activate it.
-            </li>
-            <li style={styles.listItem}>
-              DigitalCV does not publicly list or promote your CV.
-            </li>
-          </ul>
-        </Section>
+          <Section title="5. CV Content & Ownership" icon={<FileText className="w-5 h-5" />}>
+            <ul className="space-y-3">
+              <ListItem>You retain full ownership of your CV content.</ListItem>
+              <ListItem>DigitalCV does not sell or reuse your CV data.</ListItem>
+              <ListItem>We do not edit CV content beyond formatting for ATS compatibility.</ListItem>
+            </ul>
+          </Section>
 
-        <Section title="5. CV Content & Ownership">
-          <ul style={styles.list}>
-            <li style={styles.listItem}>
-              You retain full ownership of your CV content.
-            </li>
-            <li style={styles.listItem}>DigitalCV does not sell or reuse your CV data.</li>
-            <li style={styles.listItem}>
-              We do not edit CV content beyond formatting for ATS compatibility.
-            </li>
-          </ul>
-        </Section>
+          <Section title="6. Payments & Financial Data" icon={<CreditCard className="w-5 h-5" />}>
+            <div className="bg-yellow-50/50 rounded-xl p-6 border border-yellow-100">
+              <ul className="space-y-3">
+                <ListItem>All payments are processed via secure third-party payment gateways.</ListItem>
+                <ListItem>DigitalCV <strong>does not store</strong> debit/credit card information.</ListItem>
+                <ListItem>Payment records are stored only for accounting and support purposes.</ListItem>
+              </ul>
+            </div>
+          </Section>
 
-        <Section title="6. Payments & Financial Data">
-          <ul style={styles.list}>
-            <li style={styles.listItem}>
-              All payments are processed via secure third-party payment gateways.
-            </li>
-            <li style={styles.listItem}>
-              DigitalCV does not store debit/credit card information.
-            </li>
-            <li style={styles.listItem}>
-              Payment records are stored only for accounting and support purposes.
-            </li>
-          </ul>
-        </Section>
+          <Section title="7. Data Storage & Security" icon={<Shield className="w-5 h-5" />}>
+            <p className="text-gray-600 mb-4">
+              We take reasonable security measures to protect your data, including secure servers, access controls, and encryption.
+            </p>
+            <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg text-sm text-gray-500">
+              <AlertCircle className="w-5 h-5 text-gray-400 shrink-0 mt-0.5" />
+              <p>However, no system is 100% secure, and we cannot guarantee absolute security.</p>
+            </div>
+          </Section>
 
-        <Section title="7. Data Storage & Security">
-          <p style={styles.paragraph}>
-            We take reasonable security measures to protect your data, including:
-          </p>
-          <ul style={styles.list}>
-            <li style={styles.listItem}>Secure servers</li>
-            <li style={styles.listItem}>Access controls</li>
-            <li style={styles.listItem}>Limited admin access</li>
-            <li style={styles.listItem}>
-              Encrypted authentication mechanisms where applicable
-            </li>
-          </ul>
-          <p style={styles.paragraph}>
-            However, no system is 100% secure, and we cannot guarantee absolute security.
-          </p>
-        </Section>
+          <Section title="8. Account & Data Management" icon={<User className="w-5 h-5" />}>
+            <div className="space-y-6">
+              <div>
+                <SubTitle>Username & PIN</SubTitle>
+                <ul className="space-y-2">
+                  <ListItem>Keep your username and PIN confidential.</ListItem>
+                  <ListItem>We are not responsible for unauthorized access via shared credentials.</ListItem>
+                </ul>
+              </div>
+              
+              <div>
+                <SubTitle>Data Retention & Deletion</SubTitle>
+                <ul className="space-y-2">
+                  <ListItem>Data is stored while your account is active.</ListItem>
+                  <ListItem>Expired CV data may be retained for a limited time.</ListItem>
+                  <ListItem>Account deletion permanently removes all associated data.</ListItem>
+                </ul>
+              </div>
+            </div>
+          </Section>
 
-        <Section title="8. Username & PIN Responsibility">
-          <ul style={styles.list}>
-            <li style={styles.listItem}>
-              You are responsible for keeping your username and PIN confidential.
-            </li>
-            <li style={styles.listItem}>
-              DigitalCV is not responsible for unauthorized access caused by shared or leaked credentials.
-            </li>
-            <li style={styles.listItem}>You may change your PIN through your dashboard.</li>
-          </ul>
-        </Section>
+          <div className="border-t border-gray-100 my-8"></div>
 
-        <Section title="9. Data Retention">
-          <ul style={styles.list}>
-            <li style={styles.listItem}>
-              Your CV and account data are stored while your account is active.
-            </li>
-            <li style={styles.listItem}>
-              If your CV expires, data may be retained for a limited time.
-            </li>
-            <li style={styles.listItem}>
-              If you delete your account, all associated data is permanently removed.
-            </li>
-          </ul>
-        </Section>
-
-        <Section title="10. Account Deletion">
-          <ul style={styles.list}>
-            <li style={styles.listItem}>
-              You can delete your account at any time via the dashboard.
-            </li>
-            <li style={styles.listItem}>
-              Once deleted, your CV and personal data cannot be recovered.
-            </li>
-            <li style={styles.listItem}>Deleted usernames may be reused.</li>
-          </ul>
-        </Section>
-
-        <Section title="11. Third-Party Services">
-          <p style={styles.paragraph}>We use trusted third-party services such as:</p>
-          <ul style={styles.list}>
-            <li style={styles.listItem}>Google Authentication</li>
-            <li style={styles.listItem}>Payment gateways</li>
-            <li style={styles.listItem}>AI processing services (for CV formatting)</li>
-          </ul>
-          <p style={styles.paragraph}>
-            These services process data only as required to provide our functionality.
-          </p>
-        </Section>
-
-        <Section title="12. Legal Disclosure">
-          <p style={styles.paragraph}>
-            We may disclose information if required by law, court order, or government authority.
-          </p>
-        </Section>
-
-        <Section title="13. Changes to This Policy">
-          <p style={styles.paragraph}>
-            DigitalCV (Private) Limited may update this Privacy Policy at any time.
-            Continued use of the platform indicates acceptance of the updated policy.
-          </p>
-        </Section>
-
-        <Section title="14. Contact Us">
-          <p style={styles.paragraph}>
-            If you have questions or concerns about this Privacy Policy:
-          </p>
-          <p style={styles.paragraph}>📧 support@digitalcv.lk</p>
-          <p style={styles.paragraph}>DigitalCV (Private) Limited</p>
-        </Section>
+          <Section title="Contact Us" icon={<Mail className="w-5 h-5" />}>
+            <div className="bg-gray-900 text-white rounded-xl p-8 text-center">
+              <p className="text-gray-300 mb-4">If you have questions about this Privacy Policy, please contact us:</p>
+              <a href="mailto:support@digitalcv.lk" className="text-2xl font-bold hover:text-blue-400 transition-colors">
+                support@digitalcv.lk
+              </a>
+              <p className="text-gray-400 mt-4 text-sm">DigitalCV (Private) Limited</p>
+            </div>
+          </Section>
+        </div>
       </article>
     </main>
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({ title, children, icon }: { title: string; children: React.ReactNode; icon?: React.ReactNode }) {
   return (
-    <section style={styles.section}>
-      <h2 style={styles.sectionTitle}>{title}</h2>
+    <section className="scroll-mt-20">
+      <div className="flex items-center gap-3 mb-6">
+        {icon && <span className="p-2 bg-blue-50 text-blue-600 rounded-lg">{icon}</span>}
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900">{title}</h2>
+      </div>
       {children}
     </section>
   );
 }
 
 function SubTitle({ children }: { children: React.ReactNode }) {
-  return <h3 style={styles.subTitle}>{children}</h3>;
+  return <h3 className="text-lg font-semibold text-gray-800 mb-3">{children}</h3>;
 }
 
-const styles = {
-  page: {
-    fontFamily:
-      'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif',
-    lineHeight: 1.6,
-    padding: "24px 16px",
-    display: "flex",
-    justifyContent: "center",
-  },
-  card: {
-    width: "100%",
-    maxWidth: "900px",
-    border: "1px solid #e5e7eb",
-    borderRadius: "12px",
-    padding: "20px",
-  },
-  header: { marginBottom: "14px" },
-  title: { margin: 0, fontSize: "28px", fontWeight: 700 },
-  updated: { margin: "6px 0 0 0", fontSize: "14px" },
-  section: { marginTop: "18px" },
-  sectionTitle: { margin: "0 0 8px 0", fontSize: "18px", fontWeight: 700 },
-  subTitle: { margin: "8px 0 6px 0", fontSize: "15px", fontWeight: 700 },
-  paragraph: { margin: "0 0 10px 0", fontSize: "15px" },
-  list: { margin: "0 0 10px 18px", padding: 0 },
-  listItem: { marginBottom: "6px", fontSize: "15px" },
-};
+function ListItem({ children }: { children: React.ReactNode }) {
+  return (
+    <li className="flex items-start gap-3 text-gray-600">
+      <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 shrink-0" />
+      <span className="leading-relaxed">{children}</span>
+    </li>
+  );
+}
