@@ -12,7 +12,7 @@ export default function FeatureSection() {
           <h2 className="text-4xl font-bold text-black mb-6 leading-tight">
             Why Choose <br /> DigitalCV?
           </h2>
-          <p className="text-black/70 mb-6">
+          <p className="text-black/70 mb-6 text-[18px]">
             Build a career profile that stands out to humans and gets through
             screening algorithms effortlessly.
           </p>
@@ -36,7 +36,7 @@ export default function FeatureSection() {
             <h3 className="font-semibold text-lg mb-2">
               ATS - Optimized
             </h3>
-            <p className="text-black/70 text-sm leading-relaxed">
+            <p className="text-black/70 text-base leading-relaxed max-w-2xs">
               Convert your resume or handwritten CV into a world-recognized,
               ATS-friendly Digital CV
             </p>
@@ -50,7 +50,7 @@ export default function FeatureSection() {
             <h3 className="font-semibold text-lg mb-2">
               Verified & Secure
             </h3>
-            <p className="text-black/70 text-sm leading-relaxed">
+            <p className="text-black/70 text-base leading-relaxed">
               Your CV is hosted on a verified, world-recognized DigitalCV
               platform. Host your portfolio here to become even more
               professional and secure.
@@ -65,7 +65,7 @@ export default function FeatureSection() {
             <h3 className="font-semibold text-lg mb-2">
               Global Access
             </h3>
-            <p className="text-black/70 text-sm leading-relaxed">
+            <p className="text-black/70 text-base leading-relaxed max-w-xl">
               Create a unique username and remember your 4-digit PIN. Access
               your DigitalCV anywhere, anytime.
             </p>

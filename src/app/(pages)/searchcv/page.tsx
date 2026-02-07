@@ -13,7 +13,7 @@ function SearchCVContent() {
   const pin = searchParams.get("pin") || "";
 
   return (
-    <div className="flex flex-col md:flex-row min-h-[calc(100vh-150px)] pt-10 md:pt-1">
+    <div className="flex flex-col md:flex-row min-h-[calc(100vh-110px)] pt-10 md:pt-1">
       
       {/* Right Section */}
       <div className="w-full md:w-full flex items-center justify-center">
