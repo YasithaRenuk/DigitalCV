@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import StatsCards from "../components/HomePage/StatsCards";
 import CreateDigitalCV from "../components/HomePage/CreateDigitalCV";
+import HomeFooter from "../components/Layout/HomeFooter";
 
 
 export default function Home() {
@@ -26,6 +27,7 @@ export default function Home() {
       <StatsCards/>
       <FeatureSection/>
       <CreateDigitalCV/>
+      <HomeFooter/>
     </div>
   );
 }
