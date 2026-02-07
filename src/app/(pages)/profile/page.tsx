@@ -127,6 +127,12 @@ export default function ProfilePage() {
     router.push("/contactus?reasonTopic=" + topic);
   };
 
+  const stateClasses = {
+    active: "bg-green-100 text-green-700",
+    pending: "bg-yellow-100 text-yellow-700",
+    deactive: "bg-red-100 text-red-700",
+  };
+
   if (status === "loading") {
     return <div className="flex justify-center py-20">Loading...</div>;
   }
@@ -200,10 +206,16 @@ export default function ProfilePage() {
                             </p>
 
                             {/* Status badge (mobile under title) */}
-                            <span className="inline-block mt-2 sm:hidden bg-green-100 text-green-700 px-3 py-1 text-sm rounded-full">
+                            <span
+                              className={`hidden sm:inline-block px-3 py-1 text-sm rounded-full ${
+                                stateClasses[cv.states] ?? "bg-gray-100 text-gray-700"
+                              }`}
+                            >
                               {cv.states === "active"
                                 ? "Ready to Apply"
-                                : "Pending"}
+                                : cv.states === "pending"
+                                ? "Pending"
+                                : "Deactivated"}
                             </span>
                           </div>
                         </div>
