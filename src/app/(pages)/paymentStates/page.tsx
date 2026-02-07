@@ -9,6 +9,10 @@ import {
   Ban,
   Loader2,
   AlertTriangle,
+  ArrowRight,
+  Home,
+  RotateCcw,
+  Check,
 } from "lucide-react"
 
 type StatusType = "success" | "failed" | "cancelled" | "pending" | "unknown"
@@ -19,11 +23,16 @@ const getStatusUI = (state: string | null) => {
   switch (normalized) {
     case "success":
     case "completed":
-    case "confirmed": // 👈 added this so CONFIRMED is treated as success
+    case "confirmed":
       return {
         title: "Payment Successful",
-        message: "Your transaction has been completed",
+        message: "Thank you! Your transaction has been completed successfully.",
         type: "success" as StatusType,
+        color: "green",
+        gradient: "from-emerald-500 to-green-600",
+        bg: "bg-emerald-50 dark:bg-emerald-950/20",
+        border: "border-emerald-200 dark:border-emerald-800",
+        iconColor: "text-emerald-600 dark:text-emerald-400",
       }
 
     case "failed":
@@ -31,31 +40,51 @@ const getStatusUI = (state: string | null) => {
     case "declined":
       return {
         title: "Payment Failed",
-        message: "The payment could not be completed",
+        message: "We couldn't process your payment. Please try again.",
         type: "failed" as StatusType,
+        color: "red",
+        gradient: "from-red-500 to-rose-600",
+        bg: "bg-red-50 dark:bg-red-950/20",
+        border: "border-red-200 dark:border-red-800",
+        iconColor: "text-red-600 dark:text-red-400",
       }
 
     case "cancelled":
     case "canceled":
       return {
         title: "Payment Cancelled",
-        message: "You cancelled the payment",
+        message: "You have cancelled the transaction.",
         type: "cancelled" as StatusType,
+        color: "amber",
+        gradient: "from-amber-500 to-orange-600",
+        bg: "bg-amber-50 dark:bg-amber-950/20",
+        border: "border-amber-200 dark:border-amber-800",
+        iconColor: "text-amber-600 dark:text-amber-400",
       }
 
     case "pending":
     case "processing":
       return {
         title: "Payment Pending",
-        message: "Your payment is still processing",
+        message: "Your payment is currently being processed. Please wait.",
         type: "pending" as StatusType,
+        color: "blue",
+        gradient: "from-blue-500 to-indigo-600",
+        bg: "bg-blue-50 dark:bg-blue-950/20",
+        border: "border-blue-200 dark:border-blue-800",
+        iconColor: "text-blue-600 dark:text-blue-400",
       }
 
     default:
       return {
         title: "Unknown Status",
-        message: "We could not verify this transaction",
+        message: "We could not verify the status of this transaction.",
         type: "unknown" as StatusType,
+        color: "gray",
+        gradient: "from-gray-500 to-slate-600",
+        bg: "bg-gray-50 dark:bg-gray-950/20",
+        border: "border-gray-200 dark:border-gray-800",
+        iconColor: "text-gray-600 dark:text-gray-400",
       }
   }
 }
@@ -70,6 +99,7 @@ function PaymentStatus() {
   const [username, setUsername] = useState<string | null>(null)
   const [pin, setPin] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  const [copiedId, setCopiedId] = useState<string | null>(null)
 
   const stateUI = getStatusUI(state)
 
@@ -101,171 +131,163 @@ function PaymentStatus() {
     fetchPaymentDetails()
   }, [transactionId])
 
-  const badgeColor =
-    {
-      success:
-        "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100",
-      failed:
-        "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100",
-      cancelled:
-        "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100",
-      pending:
-        "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100",
-      unknown:
-        "bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-300",
-    }[stateUI.type] || "bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
-
-  const prettyState = state
-    ? state.charAt(0).toUpperCase() + state.slice(1).toLowerCase()
-    : "Unknown"
-
-  const handleCopy = (text: string) => {
+  const handleCopy = (text: string, id: string) => {
     if (!text) return
     navigator.clipboard.writeText(text)
+    setCopiedId(id)
+    setTimeout(() => setCopiedId(null), 2000)
   }
 
-  const shortSignature =
-    signature && signature.length > 20
-      ? `${signature.substring(0, 20)}...`
-      : signature || "Not available"
-
   const renderIcon = () => {
+    const iconClass = "w-16 h-16 text-white drop-shadow-md"
     switch (stateUI.type) {
       case "success":
-        return <CheckCircle2 className="w-12 h-12" />
+        return <CheckCircle2 className={iconClass} />
       case "failed":
-        return <XCircle className="w-12 h-12" />
+        return <XCircle className={iconClass} />
       case "cancelled":
-        return <Ban className="w-12 h-12" />
+        return <Ban className={iconClass} />
       case "pending":
-        return <Loader2 className="w-12 h-12 animate-spin" />
-      case "unknown":
+        return <Loader2 className={`${iconClass} animate-spin`} />
       default:
-        return <AlertTriangle className="w-12 h-12" />
+        return <AlertTriangle className={iconClass} />
     }
   }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-secondary/5 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="bg-card border border-border rounded-xl shadow-lg overflow-hidden">
-          {/* Header with status indicator */}
-          <div className="bg-primary text-primary-foreground p-8 text-center">
-            <div className="flex justify-center mb-4">
-              <div className="rounded-full bg-primary-foreground/20 p-3">
-                {renderIcon()}
-              </div>
-            </div>
-            <h1 className="text-2xl font-bold">{stateUI.title}</h1>
-            <p className="text-primary-foreground/80 text-sm mt-2">
-              {stateUI.message}
+  const DetailRow = ({
+    label,
+    value,
+    id,
+    allowCopy = false,
+  }: {
+    label: string
+    value: string | null
+    id: string
+    allowCopy?: boolean
+  }) => {
+    if (!value) return null
+
+    return (
+      <div className="group relative bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-4 transition-all duration-200 hover:shadow-md hover:border-gray-200 dark:hover:border-gray-700">
+        <div className="flex justify-between items-start gap-3">
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
+              {label}
+            </p>
+            <p className="text-sm font-medium text-gray-900 dark:text-gray-100 font-mono break-all selection:bg-primary/20">
+              {value}
             </p>
           </div>
+          {allowCopy && (
+            <button
+              onClick={() => handleCopy(value, id)}
+              className="flex-shrink-0 p-2 rounded-lg text-gray-400 hover:text-primary hover:bg-primary/5 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20"
+              title="Copy to clipboard"
+            >
+              {copiedId === id ? (
+                <Check className="w-4 h-4 text-green-500 animate-in zoom-in" />
+              ) : (
+                <Copy className="w-4 h-4" />
+              )}
+            </button>
+          )}
+        </div>
+      </div>
+    )
+  }
 
-          {/* Details section */}
-          <div className="p-8 space-y-6">
-            {/* Transaction ID */}
-            <div>
-              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                Transaction ID
-              </label>
-              <div
-                className="mt-2 flex items-center gap-2 bg-secondary/50 rounded-lg p-3 group cursor-pointer hover:bg-secondary/70 transition-colors"
-                onClick={() => handleCopy(transactionId || "")}
-              >
-                <code className="text-sm font-mono text-foreground flex-1 break-all">
-                  {transactionId || "Not available"}
-                </code>
-                <Copy className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
-              </div>
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className={`absolute -top-[20%] -right-[10%] w-[70vh] h-[70vh] rounded-full bg-gradient-to-br ${stateUI.gradient} opacity-[0.03] blur-3xl`} />
+        <div className={`absolute -bottom-[20%] -left-[10%] w-[60vh] h-[60vh] rounded-full bg-gradient-to-tr ${stateUI.gradient} opacity-[0.03] blur-3xl`} />
+      </div>
+
+      <div className="w-full max-w-md relative z-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-xl overflow-hidden border border-gray-100 dark:border-gray-800">
+          
+          {/* Header Status Card */}
+          <div className={`relative overflow-hidden p-8 text-center bg-gradient-to-br ${stateUI.gradient}`}>
+            {/* Decorative circles */}
+            <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-10">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white rounded-full -mr-16 -mt-16" />
+              <div className="absolute bottom-0 left-0 w-32 h-32 bg-white rounded-full -ml-16 -mb-16" />
             </div>
 
-            {/* Status */}
-            <div>
-              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                Status
-              </label>
-              <div className="mt-2 flex items-center gap-2">
-                <span
-                  className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${badgeColor}`}
-                >
-                  {prettyState}
-                </span>
+            <div className="relative z-10 flex flex-col items-center">
+              <div className="mb-6 p-4 bg-white/10 backdrop-blur-sm rounded-full ring-4 ring-white/20 shadow-lg animate-in zoom-in duration-500">
+                {renderIcon()}
               </div>
-            </div>
-
-            {/* Username */}
-            {!loading && username && (
-              <div>
-                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                  Username
-                </label>
-                <div
-                  className="mt-2 flex items-center gap-2 bg-secondary/50 rounded-lg p-3 group cursor-pointer hover:bg-secondary/70 transition-colors"
-                  onClick={() => handleCopy(username || "")}
-                >
-                  <code className="text-sm font-mono text-foreground flex-1 break-all">
-                    {username}
-                  </code>
-                  <Copy className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
-                </div>
-              </div>
-            )}
-
-            {/* PIN */}
-            {!loading && pin && (
-              <div>
-                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                  PIN
-                </label>
-                <div
-                  className="mt-2 flex items-center gap-2 bg-secondary/50 rounded-lg p-3 group cursor-pointer hover:bg-secondary/70 transition-colors"
-                  onClick={() => handleCopy(pin || "")}
-                >
-                  <code className="text-sm font-mono text-foreground flex-1 break-all">
-                    {pin}
-                  </code>
-                  <Copy className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
-                </div>
-              </div>
-            )}
-
-            {/* Signature */}
-            <div>
-              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                Signature
-              </label>
-              <div
-                className="mt-2 flex items-center gap-2 bg-secondary/50 rounded-lg p-3 group cursor-pointer hover:bg-secondary/70 transition-colors"
-                onClick={() => handleCopy(signature || "")}
-              >
-                <code className="text-sm font-mono text-foreground flex-1 break-all">
-                  {shortSignature}
-                </code>
-                <Copy className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
-              </div>
+              <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">
+                {stateUI.title}
+              </h1>
+              <p className="text-white/90 text-sm font-medium leading-relaxed max-w-xs mx-auto">
+                {stateUI.message}
+              </p>
             </div>
           </div>
 
-          {/* Actions footer */}
-          <div className="bg-secondary/30 border-t border-border px-8 py-4 flex gap-3">
+          {/* Details Section */}
+          <div className="p-6 space-y-4">
+            <DetailRow 
+              label="Transaction ID" 
+              value={transactionId} 
+              id="tid" 
+              allowCopy 
+            />
+
+            {!loading && (
+              <>
+                <DetailRow 
+                  label="Username" 
+                  value={username} 
+                  id="username" 
+                  allowCopy 
+                />
+                <DetailRow 
+                  label="PIN" 
+                  value={pin} 
+                  id="pin" 
+                  allowCopy 
+                />
+              </>
+            )}
+
+            {signature && (
+               <DetailRow 
+               label="Signature Reference" 
+               value={signature.length > 25 ? `${signature.substring(0, 25)}...` : signature}
+               id="sig" 
+               allowCopy 
+             />
+            )}
+          </div>
+
+          {/* Footer Actions */}
+          <div className="p-6 pt-2 bg-gray-50/50 dark:bg-gray-900/50 grid grid-cols-2 gap-3">
             <button
               onClick={() => window.history.back()}
-              className="flex-1 py-2 px-4 rounded-lg border border-border text-foreground hover:bg-secondary transition-colors text-sm font-medium"
+              className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 font-semibold text-sm hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700"
             >
+              <RotateCcw className="w-4 h-4" />
               Go Back
             </button>
             <button
               onClick={() => (window.location.href = "/")}
-              className="flex-1 py-2 px-4 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-sm font-medium"
+              className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r ${stateUI.gradient} text-white font-semibold text-sm hover:opacity-90 transition-all duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary`}
             >
-              Home
+              <Home className="w-4 h-4" />
+              Return Home
             </button>
           </div>
         </div>
 
-        <p className="text-center text-muted-foreground text-xs mt-4">
-          Keep this confirmation for your records
+        <p className="text-center mt-6 text-sm text-gray-400 dark:text-gray-500 flex items-center justify-center gap-1.5">
+          <span>Need help?</span>
+          <a href="/contactus" className="text-primary hover:text-primary/80 font-medium underline-offset-4 hover:underline transition-colors cursor-pointer">
+            Contact Support
+          </a>
         </p>
       </div>
     </div>
@@ -276,11 +298,16 @@ export default function SearchCV() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-gradient-to-br from-background to-secondary/5 flex items-center justify-center">
-          <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-4" />
-            <p className="text-muted-foreground">Loading payment status...</p>
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col items-center justify-center space-y-4">
+          <div className="relative">
+            <div className="w-12 h-12 rounded-full border-4 border-gray-200 dark:border-gray-800 border-t-primary animate-spin" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-2 h-2 rounded-full bg-primary" />
+            </div>
           </div>
+          <p className="text-gray-500 dark:text-gray-400 font-medium animate-pulse">
+            Verifying payment details...
+          </p>
         </div>
       }
     >
