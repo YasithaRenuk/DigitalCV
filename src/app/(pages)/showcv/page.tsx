@@ -188,7 +188,7 @@ function SearchCVContent() {
         <div className="flex flex-col gap-2">
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">One Last Step!</h1>
           <p className="text-slate-500 text-sm leading-relaxed">
-            Your CV is ready. Proceed to payment to make it availabil for searchs.
+            Your DigitalCV is ready. Proceed to payment to make it availabil for searchs.
           </p>
         </div>
 
