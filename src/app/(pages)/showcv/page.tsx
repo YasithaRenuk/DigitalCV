@@ -18,7 +18,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Loader2, AlertCircle, CreditCard, Trash2, FileText } from "lucide-react";
+import { Loader2, AlertCircle, CreditCard, Trash2, FileText, Lock } from "lucide-react";
 
 type GetCVResponse = {
   success: boolean;
@@ -188,19 +188,24 @@ function SearchCVContent() {
         <div className="flex flex-col gap-2">
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">One Last Step!</h1>
           <p className="text-slate-500 text-sm leading-relaxed">
-            Your DigitalCV is ready. Proceed to payment to make it availabil for searchs.
+            Your DigitalCV is ready. Activate it to make your profile visible to recruiters.
           </p>
         </div>
 
         <div className="flex flex-col gap-4 w-full">
-          <Button
-            className="w-full h-12 text-base font-medium shadow-lg hover:shadow-xl transition-all duration-200"
+            <Button
+            className="w-full h-12 text-base font-medium shadow-lg hover:shadow-xl transition-all duration-200 p-2"
             size="lg"
             onClick={handleSubmit}
-          >
-            <CreditCard className="mr-2 h-5 w-5" />
-            Make CV Online With Payment
-          </Button>
+            >
+            <Lock  className="mr-2 h-5 w-5" />
+            <span className="hidden lg:inline">
+              Activate My DigitalCV - Rs.2,500
+            </span>
+            <span className="lg:hidden">
+              Activate My DigitalCV - Rs.2,500
+            </span>
+            </Button>
 
           <div className="relative py-2">
             <div className="absolute inset-0 flex items-center">
