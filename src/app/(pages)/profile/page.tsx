@@ -25,6 +25,7 @@ import {
   IdCard,
   Pencil,
   Bug,
+  LinkIcon,
 } from "lucide-react";
 import CvTemplate from "@/app/components/ShowCV/CvTemplate";
 
@@ -125,6 +126,11 @@ export default function ProfilePage() {
 
   const onClick = (topic: string) => {
     router.push("/contactus?reasonTopic=" + topic);
+  };
+
+  const handleCopyLink = (id: string) => {
+    const link = `${window.location.origin}/showcv?id=${id}`;
+    router.push(link);
   };
 
   const stateClasses = {
@@ -242,6 +248,15 @@ export default function ProfilePage() {
                             View DigitalCV
                           </Button>
 
+                          <Button
+                            variant="outline"
+                            onClick={() => handleCopyLink(cv._id)}
+                            className="flex-1 text-green-600 hover:text-green-700 hover:bg-green-50 shadow-green"
+                          >
+                            <LinkIcon size={16} className="mr-2" />
+                            Make Payment
+                          </Button>
+                          
                           <Button
                             variant="destructive"
                             size="icon"
