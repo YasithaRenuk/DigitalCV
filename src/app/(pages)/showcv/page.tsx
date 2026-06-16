@@ -79,41 +79,9 @@ function SearchCVContent() {
     fetchCV();
   }, [id, router]);
 
-  const handleSubmit = async () => {
-    try {
-      // safe access to user id
-      const userId = (session?.user as { id?: string } | undefined)?.id;
-
-      if (!userId || !id) {
-        console.error("Missing userId or CVID");
-        return;
-      }
-
-      const res = await fetch("/api/startpayment", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId,
-          CVID: id,
-        }),
-      });
-
-      if (!res.ok) {
-        console.error("Payment API failed", res.status);
-        return;
-      }
-
-      const data = await res.json();
-
-      if (data?.success && data?.url) {
-        router.push(data.url);
-      } else {
-        console.error("Unexpected payment response", data);
-      }
-    } catch (err) {
-      console.error("Error calling payment API", err);
+  const handleSubmit = () => {
+    if (id) {
+      router.push(`/bill?id=${id}`);
     }
   };
 
