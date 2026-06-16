@@ -4,10 +4,13 @@ export interface IPaymet extends Document{
     userID :string;
     CVID :string;
     amount :number;
+    originalAmount: number;
     currency:string;
     genieTransactionId:string;
     status:string;
     transactionId:string;
+    couponCode?: string;
+    discountPercentage?: number;
     rawRequest:Object;
     rawResponse:Object;
     callbackData:Object;
@@ -29,6 +32,9 @@ const PaymentSchema :Schema = new Schema(
             type :Number,
             required : true
         },
+        originalAmount: {
+            type: Number,
+        },
         currency : {
             type : String,
             required : true,
@@ -45,6 +51,12 @@ const PaymentSchema :Schema = new Schema(
             required:true,
             enum: ["PENDING", "CONFIRMED", "FAILED"],
             default: "PENDING",
+        },
+        couponCode: {
+            type: String,
+        },
+        discountPercentage: {
+            type: Number,
         },
         rawRequest: { type: Object },  // data you sent to Genie
         rawResponse: { type: Object }, // data you got from Genie

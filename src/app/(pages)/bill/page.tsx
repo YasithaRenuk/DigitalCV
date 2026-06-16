@@ -6,14 +6,19 @@ import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  CreditCard, 
-  Loader2, 
-  ShieldCheck, 
-  ArrowLeft, 
+import { Input } from "@/components/ui/input";
+import {
+  CreditCard,
+  Loader2,
+  ShieldCheck,
+  ArrowLeft,
   Receipt,
-  CheckCircle2
+  Ticket,
+  CheckCircle2,
+  XCircle,
 } from "lucide-react";
+
+const BASE_PRICE = 2500;
 
 function BillContent() {
   const { data: session } = useSession();
@@ -24,11 +29,67 @@ function BillContent() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Coupon state
+  const [couponInput, setCouponInput] = useState("");
+  const [couponValidating, setCouponValidating] = useState(false);
+  const [couponError, setCouponError] = useState<string | null>(null);
+  const [appliedCoupon, setAppliedCoupon] = useState<{
+    code: string;
+    discountPercentage: number;
+  } | null>(null);
+
+  const discountAmount = appliedCoupon
+    ? Math.round(BASE_PRICE * (appliedCoupon.discountPercentage / 100))
+    : 0;
+  const finalPrice = BASE_PRICE - discountAmount;
+
+  const handleApplyCoupon = async () => {
+    const code = couponInput.trim().toUpperCase();
+    if (!code) {
+      setCouponError("Please enter a coupon code.");
+      return;
+    }
+
+    setCouponValidating(true);
+    setCouponError(null);
+    setAppliedCoupon(null);
+
+    try {
+      const res = await fetch("/api/coupon/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code }),
+      });
+
+      const data = await res.json();
+
+      if (data.success && data.coupon) {
+        setAppliedCoupon({
+          code: data.coupon.code,
+          discountPercentage: data.coupon.discountPercentage,
+        });
+        setCouponError(null);
+      } else {
+        setCouponError(data.error || "Invalid coupon code.");
+      }
+    } catch (err) {
+      setCouponError("Failed to validate coupon. Please try again.");
+    } finally {
+      setCouponValidating(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponInput("");
+    setCouponError(null);
+  };
+
   const handlePay = async () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const userId = (session?.user as { id?: string } | undefined)?.id;
 
       if (!userId || !id) {
@@ -39,17 +100,17 @@ function BillContent() {
 
       const res = await fetch("/api/startpayment", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userId,
           CVID: id,
+          ...(appliedCoupon ? { couponCode: appliedCoupon.code } : {}),
         }),
       });
 
       if (!res.ok) {
-        throw new Error("Payment initialization failed");
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || "Payment initialization failed");
       }
 
       const data = await res.json();
@@ -68,10 +129,10 @@ function BillContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-indigo-50/30 py-12 px-4 sm:px-6 lg:px-8 flex flex-col items-center ">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-indigo-50/30 py-12 px-4 sm:px-6 lg:px-8 flex flex-col items-center">
       <div className="w-full max-w-xl">
         {/* Back Button */}
-        <button 
+        <button
           onClick={() => router.push(`/showcv?id=${id}`)}
           className="flex items-center gap-2 text-slate-500 hover:text-slate-800 transition-colors text-sm font-medium mb-6 group"
         >
@@ -100,49 +161,98 @@ function BillContent() {
               <span className="text-xs font-mono font-medium text-slate-600 select-all">{id}</span>
             </div>
 
-            {/* Included Features */}
-            {/* <div className="space-y-3">
-              <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">Premium Access Included</h4>
-              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-sm text-slate-600">
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-                  <span>Custom sharable link</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-                  <span>Visible to top recruiters</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-                  <span>PDF Download support</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-                  <span>Unlimited layout edits</span>
-                </li>
-              </ul>
-            </div> */}
+            <div className="border-t border-dashed border-slate-200 my-2" />
 
-            <div className="border-t border-dashed border-slate-200 my-6" />
+            {/* Coupon Code Section */}
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                <Ticket className="w-3.5 h-3.5" />
+                Coupon Code
+              </label>
+
+              {appliedCoupon ? (
+                <div className="flex items-center justify-between bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <div>
+                      <p className="text-sm font-semibold text-emerald-800 font-mono tracking-wider">
+                        {appliedCoupon.code}
+                      </p>
+                      <p className="text-xs text-emerald-600">
+                        {appliedCoupon.discountPercentage}% discount applied — you save Rs.{" "}
+                        {discountAmount.toLocaleString("en-IN")}.00
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleRemoveCoupon}
+                    className="text-slate-400 hover:text-red-500 transition-colors ml-2"
+                    title="Remove coupon"
+                  >
+                    <XCircle className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Enter coupon code"
+                    value={couponInput}
+                    onChange={(e) => {
+                      setCouponInput(e.target.value.toUpperCase());
+                      setCouponError(null);
+                    }}
+                    onKeyDown={(e) => e.key === "Enter" && handleApplyCoupon()}
+                    className="font-mono uppercase tracking-wider border-slate-200 focus-visible:ring-orange-400"
+                    disabled={couponValidating}
+                  />
+                  <Button
+                    onClick={handleApplyCoupon}
+                    disabled={couponValidating || !couponInput.trim()}
+                    variant="outline"
+                    className="shrink-0 border-orange-300 text-orange-600 hover:bg-orange-50 hover:border-orange-400 font-semibold rounded-xl px-5"
+                  >
+                    {couponValidating ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      "Apply"
+                    )}
+                  </Button>
+                </div>
+              )}
+
+              {couponError && (
+                <p className="text-xs text-red-600 flex items-center gap-1.5 mt-1">
+                  <XCircle className="w-3.5 h-3.5 shrink-0" />
+                  {couponError}
+                </p>
+              )}
+            </div>
+
+            <div className="border-t border-dashed border-slate-200" />
 
             {/* Price Table */}
             <div className="space-y-3">
               <div className="flex justify-between text-sm text-slate-500">
                 <span>DigitalCV Premium Activation</span>
-                <span className="font-semibold text-slate-800">Rs. 2,500.00</span>
+                <span className={`font-semibold ${appliedCoupon ? "line-through text-slate-400" : "text-slate-800"}`}>
+                  Rs. {BASE_PRICE.toLocaleString("en-IN")}.00
+                </span>
               </div>
-              {/* <div className="flex justify-between text-sm text-slate-500">
-                <span>Setup & Hosting Fee</span>
-                <span className="text-emerald-600 font-medium">FREE</span>
-              </div> */}
-              {/* <div className="flex justify-between text-sm text-slate-500">
-                <span>Taxes & VAT</span>
-                <span>Included</span>
-              </div> */}
+
+              {appliedCoupon && (
+                <div className="flex justify-between text-sm text-emerald-600">
+                  <span>Coupon Discount ({appliedCoupon.discountPercentage}% OFF)</span>
+                  <span className="font-semibold">− Rs. {discountAmount.toLocaleString("en-IN")}.00</span>
+                </div>
+              )}
 
               <div className="border-t border-slate-150 pt-3 flex justify-between items-baseline">
                 <span className="text-base font-bold text-slate-900">Total Amount</span>
-                <span className="text-2xl font-extrabold text-secondary">Rs. 2,500.00</span>
+                <div className="text-right">
+                  <span className="text-2xl font-extrabold text-secondary">
+                    Rs. {finalPrice.toLocaleString("en-IN")}.00
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -168,7 +278,12 @@ function BillContent() {
               ) : (
                 <>
                   <CreditCard className="w-5 h-5" />
-                  Pay Now & Activate
+                  Pay Now &amp; Activate
+                  {appliedCoupon && (
+                    <span className="ml-1 text-sm font-normal opacity-90">
+                      — Rs. {finalPrice.toLocaleString("en-IN")}.00
+                    </span>
+                  )}
                 </>
               )}
             </Button>

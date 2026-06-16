@@ -8,6 +8,7 @@ import {
   FileText,
   LogOut,
   BadgeDollarSign,
+  Ticket,
 } from "lucide-react";
 import { signOut,useSession } from "next-auth/react";
 
@@ -30,6 +31,7 @@ const items = [
   { title: "Users", url: "/admin/users", icon: Users },
   { title: "CVs", url: "/admin/usercv", icon: FileText },
   { title: "Payments", url: "/admin/payments", icon: BadgeDollarSign },
+  { title: "Coupons", url: "/admin/coupons", icon: Ticket },
 ];
 
 export function AppSidebar() {
