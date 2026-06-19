@@ -5,12 +5,16 @@ import UserCV from "@/models/UserCV";
 import Payment from "@/models/Payment";
 import Coupon from "@/models/Coupon";
 import { serverEnv } from "@/config/server-env";
+import { autoDeactivateExpiredCoupons } from "@/lib/autoDeactivateCoupons";
 
 const BASE_AMOUNT = 250000; // Rs. 2,500.00 in cents/smallest unit
 
 export async function POST(request: NextRequest) {
   try {
     await connectDB();
+
+    // Auto-deactivate any expired or not-yet-active coupons before processing
+    await autoDeactivateExpiredCoupons();
 
     const body = await request.json();
     const { userId, CVID, couponCode } = body;

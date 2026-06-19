@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Coupon from '@/models/Coupon';
+import { autoDeactivateExpiredCoupons } from '@/lib/autoDeactivateCoupons';
 
 export async function POST(request: NextRequest) {
   try {
     await connectDB();
+
+    // Auto-deactivate any expired or not-yet-active coupons before validation
+    await autoDeactivateExpiredCoupons();
 
     const { code } = await request.json();
 
