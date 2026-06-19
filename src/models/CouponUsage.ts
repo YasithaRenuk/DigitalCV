@@ -44,6 +44,7 @@ const CouponUsageSchema: Schema = new Schema(
     paymentId: {
       type: String,
       required: true,
+      unique: true,
     },
     discountPercentage: {
       type: Number,
