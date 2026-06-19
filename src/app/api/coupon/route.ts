@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth';
 import connectDB from '@/lib/mongodb';
 import Coupon from '@/models/Coupon';
 import CouponUsage from '@/models/CouponUsage';
+import { autoDeactivateExpiredCoupons } from '@/lib/autoDeactivateCoupons';
 
 // GET all coupons
 export async function GET(request: NextRequest) {
@@ -17,6 +18,9 @@ export async function GET(request: NextRequest) {
     }
 
     await connectDB();
+
+    // Auto-deactivate coupons that are outside their active date range
+    await autoDeactivateExpiredCoupons();
 
     const { searchParams } = new URL(request.url);
     const fetchUsages = searchParams.get('usages') === '1';
