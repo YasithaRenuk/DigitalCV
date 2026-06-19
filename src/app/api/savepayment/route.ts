@@ -17,6 +17,13 @@ export async function POST(request: NextRequest) {
     const normalizedState = (state || "").toLowerCase();
     console.log("normalizedState:", normalizedState);
 
+    // Idempotency: check if this payment was already confirmed before
+    const existingPayment = await Payment.findById(localId);
+    if (existingPayment && existingPayment.status === "CONFIRMED" && (state || "").toLowerCase() === "confirmed") {
+      console.log("Webhook duplicate: payment already confirmed for localId:", localId);
+      return NextResponse.json({ success: true }, { status: 200 });
+    }
+
     const payment = await Payment.findByIdAndUpdate(
       localId,
       {
@@ -66,28 +73,36 @@ export async function POST(request: NextRequest) {
           try {
             const coupon = await Coupon.findOne({ code: payment.couponCode });
             if (coupon) {
-              const originalAmount = payment.originalAmount || 250000;
-              const discountAmount = originalAmount - payment.amount;
+              const paymentIdStr = (payment as any)._id.toString();
 
-              // Fetch user details for logging
-              const user = await User.findById(payment.userID);
+              // Idempotency: only log if no usage record exists for this payment yet
+              const alreadyLogged = await CouponUsage.findOne({ paymentId: paymentIdStr });
+              if (alreadyLogged) {
+                console.log(`Coupon usage already logged for paymentId: ${paymentIdStr}, skipping duplicate.`);
+              } else {
+                const originalAmount = payment.originalAmount || 250000;
+                const discountAmount = originalAmount - payment.amount;
 
-              await CouponUsage.create({
-                couponId: coupon._id,
-                couponCode: coupon.code,
-                userId: payment.userID,
-                userEmail: user?.email,
-                userName: user?.name,
-                cvId: payment.CVID,
-                paymentId: (payment as any)._id.toString(),
-                discountPercentage: payment.discountPercentage,
-                discountAmount: discountAmount,
-              });
+                // Fetch user details for logging
+                const user = await User.findById(payment.userID);
 
-              // Increment usedCount on the coupon
-              await Coupon.findByIdAndUpdate(coupon._id, { $inc: { usedCount: 1 } });
+                await CouponUsage.create({
+                  couponId: coupon._id,
+                  couponCode: coupon.code,
+                  userId: payment.userID,
+                  userEmail: user?.email,
+                  userName: user?.name,
+                  cvId: payment.CVID,
+                  paymentId: paymentIdStr,
+                  discountPercentage: payment.discountPercentage,
+                  discountAmount: discountAmount,
+                });
 
-              console.log(`Coupon usage logged: ${coupon.code} used by ${user?.email}`);
+                // Increment usedCount on the coupon
+                await Coupon.findByIdAndUpdate(coupon._id, { $inc: { usedCount: 1 } });
+
+                console.log(`Coupon usage logged: ${coupon.code} used by ${user?.email}`);
+              }
             }
           } catch (couponErr) {
             console.error("Error logging coupon usage:", couponErr);
